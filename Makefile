@@ -1,5 +1,5 @@
 CC=g++
-FLAGS= -std=c++-17 -Wall
+FLAGS= -std=c++17 -Wall
 
 advent1: advent1.cpp
 	$(CC) $(FLAGS) advent1.cpp -o advent1
