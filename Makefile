@@ -7,4 +7,6 @@ advent1: advent1.cpp
 advent2: advent2.cpp
 	$(CC) $(FLAGS) advent2.cpp -o advent2
 
-
+clean:
+	-rm -f advent1
+	-rm -f advent2
