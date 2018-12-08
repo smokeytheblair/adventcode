@@ -55,6 +55,7 @@ def find_most_asleep(notes):
     most_asleep_key = [k for k, v in sleeping_minutes.items() if v == max_minute]
     guard_id = re.findall("\d+", most_asleep_key[0])[0]
     sleepiest_minute = re.findall("\d+", most_asleep_key[0])[1]
+    print(most_asleep_key)
     print(int(sleepiest_minute) * int(guard_id))
 
         
