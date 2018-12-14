@@ -17,23 +17,6 @@ def get_top_keys(prereqs):
     return sorted(top_keys)
 
 
-def print_child(key, prereqs, level):
-    indent = "   "*level
-    print("{} {}".format(indent, key))
-
-    if prereqs.get(key) != None:
-        for child in sorted(prereqs[key]):
-            print_child(child, prereqs, level+1)
-
-
-def print_tree(prereqs):
-    top_keys = get_top_keys(prereqs)
-    print("top_keys {}".format(top_keys))
-
-    for child in sorted(top_keys):
-        print_child(child, prereqs, 1)
-
-
 def load_inputs(input_file):
     print("loading inputs...")
 
@@ -46,17 +29,9 @@ def load_inputs(input_file):
         prereq = parts[7]
         prereqs[step].append(prereq)
 
+    print("prereqs:\n{}".format(prereqs))
     return prereqs
 
-def top_keys_first(key, top_keys, step_order):
-    remaining_top_keys = sorted([k for k in top_keys if k not in step_order])
-   
-    top_key_left = None
-    for top in remaining_top_keys:
-        if top < key:
-            top_key_left = top
-
-    return top_key_left
 
 def are_prereqs_met(key, prereqs, step_order):
     met = False
@@ -71,37 +46,6 @@ def are_prereqs_met(key, prereqs, step_order):
     return met
 
 
-
-def compute_children(key, top_keys, prereqs, step_order, level):
-    # print("lvl {} - key {}, my_prereqs {}, met? {}".format(level, key, my_prereqs, my_prereqs_met))
-
-    if are_prereqs_met(key, prereqs, step_order):
-        print("add key {}".format(key))
-        step_order.append(key)
-
-    if prereqs.get(key) != None:
-        for child in sorted(prereqs[key]):
-            compute_children(child, top_keys, prereqs, step_order, level+1)
-
-    return step_order
-    
-    
-
-def compute_step_order(prereqs):
-    print("computing step order...")
-
-    print("prereqs {}".format(prereqs))
-
-    step_order = []
-    top_keys = get_top_keys(prereqs)
-    print("top_keys {}".format(top_keys))
-
-    for key in sorted(top_keys):
-        step_order = compute_children(key, top_keys, prereqs, step_order, 1)
-
-    answer = "".join(step_order)
-    print("answer: {}".format(answer))
-
 def find_next_keys(prereqs, all_keys, step_order):
     next_keys = []
 
@@ -109,7 +53,7 @@ def find_next_keys(prereqs, all_keys, step_order):
         if are_prereqs_met(key, prereqs, step_order):
             next_keys.append(key)
 
-    print("next_keys: {}".format(next_keys))
+    # print("next_keys: {}".format(next_keys))
     return sorted(next_keys)
 
 def process_prereqs(input_file):
@@ -120,14 +64,11 @@ def process_prereqs(input_file):
     all_keys = get_top_keys(prereqs)
     for req in prereqs.values():
         all_keys = all_keys + req
-    print("all_keys: {}".format(all_keys))
+    print("all_keys:\n{}".format(all_keys))
 
     # for prereq, children in prereqs.items():
     #     print("{} is prerequsite of {}".format(prereq, children))
     # print(get_top_keys(prereqs))
-
-    # print_tree(prereqs)
-    # step_order = compute_step_order(prereqs)
 
     step_order = ""
     while len(step_order) < len(all_keys):
@@ -135,7 +76,7 @@ def process_prereqs(input_file):
         if 0 < len(next_keys):
             step_order += next_keys[0]
             all_keys.remove(next_keys[0])
-            print("step_order: {}\nall_keys: {}".format(step_order, all_keys))
+            # print("step_order: {}\nall_keys: {}".format(step_order, all_keys))
         else:
             break
 
