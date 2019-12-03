@@ -20,7 +20,7 @@ def compute_module_and_fuel(mass):
     additional_fuel = compute_module_fuel(fuel)
 
     while additional_fuel > 0:
-        print(f'additional_fuel is {additional_fuel}')
+        #print(f'additional_fuel is {additional_fuel}')
         fuel += additional_fuel
         additional_fuel = compute_module_fuel(additional_fuel)
 
