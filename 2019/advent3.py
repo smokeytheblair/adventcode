@@ -78,10 +78,24 @@ def find_coord_closest_to_origin(input_file):
     coord = find_closest_intersect(intersects)
     print(f'Closest intersect = {coord}')
 
+def find_shortest_path(input_file):
+    wires = load_wires(input_file)
+    # print(f'Wires = {wires}')
+    coords = compute_path_coords(wires)
+    # print(f'Coords = {coords}')
+    intersects = find_intersects(coords)
+    print(f'Intersects = {intersects}')
+    distances = []
+    for intersect in intersects:
+        distances.append(2 + coords[0].index(intersect) + coords[1].index(intersect))
+
+    print(f'Distances = {distances}')
+    print(f'Min path to intersect = {min(distances)}')
+
 def main():
     parser = argparse.ArgumentParser(description='Find the clossing wire closest to the center point.')
     parser.add_argument('file', type=argparse.FileType('r'))
-    parser.add_argument('--find-code', type=int, required=False, default=0, help='part 2 of the day.')
+    parser.add_argument('--shortest-path', action='store_true', default=False, help='part 2 of the day.')
 
     args = parser.parse_args()
 
@@ -89,12 +103,10 @@ def main():
 
     if (len(sys.argv) > 1):
         with args.file as input_file:
-            if args.find_code is 0:
+            if args.shortest_path is False:
                 find_coord_closest_to_origin(input_file)
             else:
-                noun, verb = find_inputs(input_file, args.find_code)
-                answer = 100 * noun + verb
-                print(f'noun = {noun}, verb = {verb}, answer = {answer}')
+                find_shortest_path(input_file)
     else:
         print_usage(sys.argv[0])
 
