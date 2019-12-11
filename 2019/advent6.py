@@ -25,12 +25,15 @@ def find_cousin(graph, start, end, path=None):
 
     path3 = list(set(path1) - set(path2))
     path4 = list(set(path2) - set(path1))
+
+    path5 = list(set(path1) ^ set(path2))
     
 #    print(f'SAN path {path1}\nYOU path {path2}')
 #    print(f'SAN path {path3} {len(path3)}')
 #    print(f'YOU path {path4} {len(path4)}')
 
-    return len(path3) + len(path4) - 2
+    # return len(path3) + len(path4) - 2
+    return len(path5) - 2
 
 def load_program(orbit_map):
     orbits = defaultdict(list)
