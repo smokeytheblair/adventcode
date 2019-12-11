@@ -19,6 +19,19 @@ def find_path(graph, start, end, path=None):
             if newpath: return newpath
     return None
 
+def find_cousin(graph, start, end, path=None):
+    path1 = find_path(graph, 'COM', 'SAN', [])
+    path2 = find_path(graph, 'COM', 'YOU', [])
+
+    path3 = list(set(path1) - set(path2))
+    path4 = list(set(path2) - set(path1))
+    
+#    print(f'SAN path {path1}\nYOU path {path2}')
+#    print(f'SAN path {path3} {len(path3)}')
+#    print(f'YOU path {path4} {len(path4)}')
+
+    return len(path3) + len(path4) - 2
+
 def load_program(orbit_map):
     orbits = defaultdict(list)
     planets = set()
@@ -29,31 +42,35 @@ def load_program(orbit_map):
         planets.add(child_node[:-1])
         orbits[parent_node].append(child_node[:-1])
 
-    # print(f'planets = {planets}')
+    print(f'planets = {planets}')
     return (orbits, planets)
 
-def process_program(orbit_map):
+def process_program(orbit_map, santa):
     orbits, planets = load_program(orbit_map)
 #    for orbit in orbits:
 #        print(f'{orbit}: {orbits[orbit]}')
     orbit_count = 0
 
-    for planet1 in planets:
-        for planet2 in planets:
-            path = find_path(orbits, planet1, planet2, []) 
-            if path is not None and 1 < len(path):
-                orbit_count += 1
-#                if len(path) > 0:
-#                print(f'path({planet1}, {planet2}) --> {path}: orbit_count = {orbit_count}')
+    if santa is False:
+        for planet1 in planets:
+            for planet2 in planets:
+                path = find_path(orbits, planet1, planet2, []) 
+                if path is not None and 1 < len(path):
+                    orbit_count += 1
+#                    if len(path) > 0:
+#                    print(f'path({planet1}, {planet2}) --> {path}: orbit_count = {orbit_count}')
+        print(f'orbit_count = {orbit_count}')
+    else:
+        hops_count = find_cousin(orbits, 'YOU', 'SAN', [])
+        print(f'path to Santa = {hops_count} hops.')
 
-    print(f'orbit_count = {orbit_count}')
 
     return orbit_count
 
 def main():
     parser = argparse.ArgumentParser(description='Compute direct + indirect orbits in the orbit map.')
     parser.add_argument('file', type=argparse.FileType('r'))
-    parser.add_argument('--find-code', type=int, required=False, default=0, help='Compute fuel for modules plus the loaded fuel.')
+    parser.add_argument('--santa', action='store_true', required=False, default=False, help='Find path through orbits from YOU to SANta')
 
     args = parser.parse_args()
 
@@ -61,14 +78,8 @@ def main():
 
     if (len(sys.argv) > 1):
         with args.file as input_file:
-            if args.find_code is 0:
-                answer = process_program(input_file)
-                print(f'Answer = {answer}')
-            else:
-                pass
-#                noun, verb = find_inputs(input_file, args.find_code)
-#                answer = 100 * noun + verb
-#                print(f'noun = {noun}, verb = {verb}, answer = {answer}')
+            answer = process_program(input_file, args.santa)
+            print(f'Answer = {answer}')
     else:
         print_usage(sys.argv[0])
 
