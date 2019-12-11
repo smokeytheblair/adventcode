@@ -105,7 +105,8 @@ def store_param(values, instr_ptr, input_param):
 def output_param(values, instr_ptr):
     command = values[instr_ptr]
     op_1_idx, op_2_idx, result_idx = get_param_modes(command, values, instr_ptr)
-    print(f'Output command = {values[op_1_idx]}')
+    # print(f'Output command = {values[op_1_idx]}')
+    return values[op_1_idx]
 
 def do_add(values, instr_ptr):
     command = values[instr_ptr]
@@ -140,11 +141,13 @@ def load_program(input_file):
 
     return program
 
-def process_program(input_file, input_param):
+def process_program(input_file, phase, prior_output):
     program = load_program(input_file)
-    print(f'{program} = {len(program)}')
+    # print(f'{program} = {len(program)}')
 
+    output = 0
     instr_ptr = 0
+    first_input = True
 
     while  instr_ptr < len(program):
         value = program[instr_ptr]
@@ -153,37 +156,57 @@ def process_program(input_file, input_param):
 
         if value == '99':
             break
-        if op_code is 1:
+        if op_code is 1: #add
             do_add(program, instr_ptr)
             instr_ptr += 4
-        if op_code == 2:
+        if op_code == 2: #multiply
             do_multiply(program, instr_ptr)
             instr_ptr += 4
-        if op_code == 3:
-            store_param(program, instr_ptr, input_param)
+        if op_code == 3: #store input
+            if first_input is True:
+                first_input = False
+                store_param(program, instr_ptr, phase)
+            else:
+                store_param(program, instr_ptr, str(prior_output))
             instr_ptr += 2
-        if op_code == 4:
-            output_param(program, instr_ptr)
+        if op_code == 4: #output
+            output = output_param(program, instr_ptr)
             instr_ptr += 2
-        if op_code == 5:
+        if op_code == 5: #jump true
             instr_ptr = jump_if_true(program, instr_ptr)
-        if op_code == 6:
+        if op_code == 6: #jump false
             instr_ptr = jump_if_false(program, instr_ptr)
-        if op_code == 7:
+        if op_code == 7: #le
             check_less_than(program, instr_ptr)
             instr_ptr += 4
-        if op_code == 8:
+        if op_code == 8: #eq
             check_equals(program, instr_ptr)
             instr_ptr += 4
 
-    # print(f'{program} = {len(program)}')
-    # print(f'program[0] = {program[0]}')
-    return program[0]
+#    print(f'program = {program}')
 
+    return int(output)
+
+def process_programs(input_file, phases):
+    final_output = 0
+    for test in phases:
+        output = 0
+        test_phases = test[:-1]
+
+        #process each amp with new phase setting and with output of prior amp
+        for phase in test_phases.split(','):
+            output = process_program(input_file, phase, output)
+            # print(f'phase:{phase} => {output}')
+            
+        final_output = max(final_output, output)
+        print(f'Test[{test_phases}]******************{output}')
+
+    print(f'Max output = {final_output}')
+    
 def main():
     parser = argparse.ArgumentParser(description='Compute required fuel for modules, or modules+fuel')
     parser.add_argument('file', type=argparse.FileType('r'))
-    parser.add_argument('--input', type=int, required=False, default=0, help='Compute fuel for modules plus the loaded fuel.')
+    parser.add_argument('phases', type=argparse.FileType('r'))
 
     args = parser.parse_args()
 
@@ -191,8 +214,8 @@ def main():
 
     if (len(sys.argv) > 1):
         with args.file as input_file:
-            if args.input is not 0:
-                answer = process_program(input_file, int(args.input))
+            with args.phases as phases:
+                answer = process_programs(input_file, phases)
     else:
         print_usage(sys.argv[0])
 
