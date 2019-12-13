@@ -3,6 +3,7 @@
 import sys
 import math
 import argparse
+import asyncio
 
 reset_program = None
 
@@ -46,7 +47,10 @@ def get_param_modes(command_in, values, instr_ptr):
         op_2_idx = instr_ptr+2
 
     if modes[0] == 0:
-        result_idx = int(values[instr_ptr+3])
+        if instr_ptr+3 < len(values):
+            result_idx = int(values[instr_ptr+3])
+        else:
+            results_idx = 0
     else:
         result_idx = instr_ptr+3
 
@@ -98,9 +102,8 @@ def check_equals(values, instr_ptr):
 def store_param(values, instr_ptr, input_param):
     store_idx = int(values[int(instr_ptr)+1])
     values[store_idx] = input_param
-
     # print(f'store_param --> {store_idx} = {input_param}')
-    
+    # print(f'program state = {values}')
 
 def output_param(values, instr_ptr):
     command = values[instr_ptr]
@@ -133,21 +136,21 @@ def load_program(input_file):
         for line in input_file:
             values = line.split(',')
             for number in values:
-                program.append(number)
+                program.append(number.strip())
                 index += 1
 
         if reset_program is None:
             reset_program = program.copy()
 
+
+    # print(f'{program} = {len(program)}')
     return program
 
-def process_program(input_file, phase, prior_output):
-    program = load_program(input_file)
+async def process_program(program, amp_index, input_queue, output_queue):
     # print(f'{program} = {len(program)}')
 
     output = 0
     instr_ptr = 0
-    first_input = True
 
     while  instr_ptr < len(program):
         value = program[instr_ptr]
@@ -163,14 +166,14 @@ def process_program(input_file, phase, prior_output):
             do_multiply(program, instr_ptr)
             instr_ptr += 4
         if op_code == 3: #store input
-            if first_input is True:
-                first_input = False
-                store_param(program, instr_ptr, phase)
-            else:
-                store_param(program, instr_ptr, str(prior_output))
+            # print(f'amp {amp_index} storing input from amp {(amp_index-1)%5}')
+            prior_output = await input_queue.get()
+            store_param(program, instr_ptr, str(prior_output))
             instr_ptr += 2
         if op_code == 4: #output
             output = output_param(program, instr_ptr)
+            # print(f'amp {amp_index} output --> {output}')
+            output_queue.put_nowait(output)
             instr_ptr += 2
         if op_code == 5: #jump true
             instr_ptr = jump_if_true(program, instr_ptr)
@@ -183,27 +186,49 @@ def process_program(input_file, phase, prior_output):
             check_equals(program, instr_ptr)
             instr_ptr += 4
 
-#    print(f'program = {program}')
+    # print(f'program = {program}')
 
     return int(output)
 
-def process_programs(input_file, phases):
-    final_output = 0
+async def process_programs(input_file, phases):
+    final_output = {} 
+
     for test in phases:
-        output = 0
+        program_a = load_program(input_file)
+        program_b = load_program(input_file)
+        program_c = load_program(input_file)
+        program_d = load_program(input_file)
+        program_e = load_program(input_file)
+
+        amps = [program_a, program_b, program_c, program_d, program_e]
+        output_queues = [asyncio.Queue(),asyncio.Queue(),asyncio.Queue(),asyncio.Queue(),asyncio.Queue()]
+
         test_phases = test[:-1]
 
-        #process each amp with new phase setting and with output of prior amp
+        iteration = 0
         for phase in test_phases.split(','):
-            output = process_program(input_file, phase, output)
-            # print(f'phase:{phase} => {output}')
-            
-        final_output = max(final_output, output)
-        print(f'Test[{test_phases}]******************{output}')
+            output_queues[(iteration-1)%5].put_nowait(phase)
+            iteration += 1
 
-    print(f'Max output = {final_output}')
+        output_queues[4].put_nowait(0)
+        coros = []
+        iteration = 0
+
+        for amp in amps:
+            coros.append(asyncio.ensure_future(process_program(amp, iteration, output_queues[(iteration-1)%5], output_queues[iteration])))
+            iteration +=1 
+
+        results = []
+        for coro in coros:
+            results.append(await coro)
+            # print(f'coro = {coro}')
+
+        final_output[test_phases] = results[4]
+        print(f'Test[{test_phases}]******{final_output[test_phases]}')
+
+    print(f'Max output = {max(final_output.values())}')
     
-def main():
+async def main():
     parser = argparse.ArgumentParser(description='Compute required fuel for modules, or modules+fuel')
     parser.add_argument('file', type=argparse.FileType('r'))
     parser.add_argument('phases', type=argparse.FileType('r'))
@@ -215,9 +240,9 @@ def main():
     if (len(sys.argv) > 1):
         with args.file as input_file:
             with args.phases as phases:
-                answer = process_programs(input_file, phases)
+                answer = await process_programs(input_file, phases)
     else:
         print_usage(sys.argv[0])
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
