@@ -226,7 +226,14 @@ async def process_programs(input_file, phases):
         final_output[test_phases] = results[4]
         print(f'Test[{test_phases}]******{final_output[test_phases]}')
 
-    print(f'Max output = {max(final_output.values())}')
+    max_output = max(final_output.values())
+    optimal_phases = ''
+
+    for key, value in final_output.items():
+        if value == max_output:
+            optimal_phases = key
+
+    print(f'Max output phases {optimal_phases} = {max_output}')
     
 async def main():
     parser = argparse.ArgumentParser(description='Compute required fuel for modules, or modules+fuel')
