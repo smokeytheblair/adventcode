@@ -27,12 +27,14 @@ def process_expense_report(input_file):
     for num_a in report:
 #        print(f"from report: num_a = {num_a}")
         for num_b in report:
-            num_1 = int(num_a)
-            num_2 = int(num_b)
+            for num_c in report:
+                num_1 = int(num_a)
+                num_2 = int(num_b)
+                num_3 = int(num_c)
 #            print(f"{num_1} + {num_2} == {num_1 + num_2}\n{num_1} * {num_2} == {num_1 * num_2}")
-            if num_1 + num_2 == 2020:
-                print(f"{num_1} + {num_2} == 2020\n{num_1} * {num_2} == {num_1 * num_2}")
-                break
+                if num_1 + num_2 + num_3 == 2020:
+                    print(f"{num_1} + {num_2} + {num_3} == {num_1+num_2+num_3}\n{num_1} * {num_2} * {num_3} == {num_1 * num_2 * num_3}")
+                    break
 
 def main():
     parser = argparse.ArgumentParser(description='Compute required fuel for modules, or modules+fuel')
