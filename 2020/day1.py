@@ -1,5 +1,5 @@
 import sys
-import math
+import itertools
 import argparse
 
 reset_report = None
@@ -25,24 +25,21 @@ def process_expense_report(input_file, number):
     report = load_expense_report(input_file)
 
     if number == 2:
-        for num_a in report: 
-            for num_b in report: 
-                num_1 = int(num_a)
-                num_2 = int(num_b)
-                if num_1 + num_2 == 2020:
-                    print(f"{num_1} + {num_2} == {num_1+num_2}\n{num_1} * {num_2} == {num_1 * num_2}")
-                    break
+        for num_a, num_b in itertools.combinations(report, number):
+            num_1 = int(num_a)
+            num_2 = int(num_b)
+            if num_1 + num_2 == 2020:
+                print(f"{num_1} + {num_2} == {num_1+num_2}\n{num_1} * {num_2} == {num_1 * num_2}")
+                break
 
     if number == 3:
-        for num_a in report:
-            for num_b in report:
-                for num_c in report:
-                    num_1 = int(num_a)
-                    num_2 = int(num_b)
-                    num_3 = int(num_c)
-                    if num_1 + num_2 + num_3 == 2020:
-                        print(f"{num_1} + {num_2} + {num_3} == {num_1+num_2+num_3}\n{num_1} * {num_2} * {num_3} == {num_1 * num_2 * num_3}")
-                        break
+        for num_a, num_b, num_c in itertools.combinations(report, number):
+            num_1 = int(num_a)
+            num_2 = int(num_b)
+            num_3 = int(num_c)
+            if num_1 + num_2 + num_3 == 2020:
+                print(f"{num_1} + {num_2} + {num_3} == {num_1+num_2+num_3}\n{num_1} * {num_2} * {num_3} == {num_1 * num_2 * num_3}")
+                break
 
 def main():
     parser = argparse.ArgumentParser(description='Compute required fuel for modules, or modules+fuel')
