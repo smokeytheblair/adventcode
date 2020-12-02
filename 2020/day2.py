@@ -1,6 +1,7 @@
 import sys
 import argparse
 from collections import Counter
+from operator import xor
 
 reset_report = None
 
@@ -31,13 +32,13 @@ def convert_tuples(report):
         min_val = int(record[0:hyphen])
         max_val = int(record[hyphen+1:space])
         letter = record[space+1:colon]
-        password = record[colon+2:]
+        password = record[colon+2:-1]
 
         new_report.append( (min_val, max_val, letter, password) )
 
     return new_report
 
-def check_passwords(input_file):
+def check_passwords_1(input_file):
     report = load_inputs(input_file)
 #    print(report)
     report = convert_tuples(report)
@@ -57,16 +58,38 @@ def check_passwords(input_file):
 
     print(f"Number of valid password: {num_valid}")
 
+def check_passwords_2(input_file):
+    report = load_inputs(input_file)
+#    print(report)
+    report = convert_tuples(report)
+#    print(report)
+    
+    num_valid = 0
+    for record in report:
+        print(record)
+#        print(count)
+        valid = False
+        if xor(record[2] == record[3][record[0]-1], record[3][record[1]-1] == record[2]):
+            valid = True
+            num_valid += 1
+
+        print(f"{record[3]} has {record[2]} in proper slot - VALID = {valid}")
+
+    print(f"Number of valid password: {num_valid}")
+
 def main():
     parser = argparse.ArgumentParser(description='Check passwords')
     parser.add_argument('file', type=argparse.FileType('r'))
-#    parser.add_argument('--number', type=int, required=True, help='How many nums to add/multiply.')
+    parser.add_argument('--number', type=int, required=True, help='How many nums to add/multiply.')
 
     args = parser.parse_args()
 
     if (len(sys.argv) > 1):
         with args.file as input_file:
-            check_passwords(input_file)
+            if args.number == 1:
+                check_passwords_1(input_file)
+            elif args.number == 2:
+                check_passwords_2(input_file)
     else:
         print_usage(sys.argv[0], args.file)
 
