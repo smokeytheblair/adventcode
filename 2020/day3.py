@@ -26,13 +26,19 @@ def count_trees_1(input_file):
     report = load_inputs(input_file)
 #    print(report)
     
+    row_index = 0
     num_tree = 0
     for record in report:
-        count = Counter(record[3])
+        line_len = len(record[:-1])
         print(record)
-#        print(count)
-        if record[0] <= count[record[2]] and count[record[2]] <= record[1]:
+
+        if record[row_index] == "#":
             num_tree += 1
+            print(f"tree at {row_index}")
+        else:
+            print(f"no tree at {row_index}")
+
+        row_index = (row_index + 3) % line_len
 
     print(f"Number of trees: {num_tree}")
 
