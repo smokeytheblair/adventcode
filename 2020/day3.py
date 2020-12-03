@@ -1,5 +1,6 @@
 import sys
 import argparse
+import math
 from collections import Counter
 from operator import xor
 
@@ -22,56 +23,67 @@ def load_inputs(input_file):
 
     return report
      
-def count_trees_1(input_file):
+def load_slopes(slopes_file):
+    slopes = []
+
+    for slope in slopes_file:
+        slopes.append( ( int(slope[0]), int(slope[2]) ) )
+
+    return slopes
+
+def count_trees_1(input_file, run, rise):
     report = load_inputs(input_file)
-#    print(report)
     
+#    print(f"Counting trees for slope({run}, {rise})")
+
     row_index = 0
-    num_tree = 0
+    num_trees = 0
+    col_index = 0
     for record in report:
+        if 0 != col_index % rise:
+            col_index += 1
+            pass
+
+#        print(f"Processing row {col_index}")
+
         line_len = len(record[:-1])
-        print(record)
+ #       print(record)
 
         if record[row_index] == "#":
-            num_tree += 1
-            print(f"tree at {row_index}")
-        else:
-            print(f"no tree at {row_index}")
+            num_trees += 1
+ #           print(f"tree at {row_index}")
+#        else:
+ #           print(f"no tree at {row_index}")
 
-        row_index = (row_index + 3) % line_len
+        row_index = (row_index + run) % line_len
 
-    print(f"Number of trees: {num_tree}")
+    print(f"Number of trees on slope({run},{rise}): {num_trees}")
+    return num_trees
 
-def check_passwords_2(input_file):
-    report = load_inputs(input_file)
-#    print(report)
-    
-    num_valid = 0
-    for record in report:
-        print(record)
-#        print(count)
-        valid = False
-        if xor(record[2] == record[3][record[0]-1], record[3][record[1]-1] == record[2]):
-            valid = True
-            num_valid += 1
+def count_trees_2(input_file, slopes_file):
+    slopes = load_slopes(slopes_file)
 
-        print(f"{record[3]} has {record[2]} in proper slot - VALID = {valid}")
+    counts = []
+    for slope in slopes:
+        counts.append( count_trees_1(input_file, int(slope[0]), int(slope[1])) )
 
-    print(f"Number of valid password: {num_valid}")
+    print(f"Total number of trees = {math.prod(counts)}")
 
 def main():
     parser = argparse.ArgumentParser(description="Count trees.")
     parser.add_argument('file', type=argparse.FileType('r'))
     parser.add_argument('--number', type=int, required=True, help='Part 1 or Part 2')
+    parser.add_argument("slopes", type=argparse.FileType('r'))
 
     args = parser.parse_args()
 
     if (len(sys.argv) > 1):
         with args.file as input_file:
             if args.number == 1:
-                count_trees_1(input_file)
+                count_trees_1(input_file, 3, 1)
             elif args.number == 2:
-                check_passwords_2(input_file)
+                with args.slopes as slopes_file:
+                    count_trees_2(input_file, slopes_file)
     else:
         print_usage(sys.argv[0], args.file)
 
