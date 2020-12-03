@@ -34,28 +34,30 @@ def load_slopes(slopes_file):
 def count_trees_1(input_file, run, rise):
     report = load_inputs(input_file)
     
-#    print(f"Counting trees for slope({run}, {rise})")
+    print(f"Counting trees for slope({run}, {rise})")
 
     row_index = 0
     num_trees = 0
     col_index = 0
+    row_count = 0
     for record in report:
-        if 0 != col_index % rise:
-            col_index += 1
-            pass
+        if 0 != row_count % rise:
+            row_count += 1
+            continue
 
-#        print(f"Processing row {col_index}")
+#        print(f"Processing row {row_count}")
 
         line_len = len(record[:-1])
- #       print(record)
+#        print(record)
 
         if record[row_index] == "#":
             num_trees += 1
- #           print(f"tree at {row_index}")
+#            print(f"tree at [{row_count}][{row_index}]")
 #        else:
- #           print(f"no tree at {row_index}")
+#            print(f"no tree at [{row_count}][{row_index}]")
 
         row_index = (row_index + run) % line_len
+        row_count += 1
 
     print(f"Number of trees on slope({run},{rise}): {num_trees}")
     return num_trees
