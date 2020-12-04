@@ -173,15 +173,15 @@ def count_passports_2(input_file):
 def main():
     parser = argparse.ArgumentParser(description="Count passports.")
     parser.add_argument('file', type=argparse.FileType('r'))
-    parser.add_argument('--number', type=int, required=True, help='Part 1 or Part 2')
+    parser.add_argument('--part', type=int, required=True, help='Part 1 or Part 2')
 
     args = parser.parse_args()
 
     if (len(sys.argv) > 1):
         with args.file as input_file:
-            if args.number == 1:
+            if args.part == 1:
                 count_passports_1(input_file)
-            elif args.number == 2:
+            elif args.part == 2:
                 count_passports_2(input_file)
     else:
         print_usage(sys.argv[0], args.file)
