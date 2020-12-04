@@ -74,16 +74,16 @@ def count_trees_2(input_file, slopes_file):
 def main():
     parser = argparse.ArgumentParser(description="Count trees.")
     parser.add_argument('file', type=argparse.FileType('r'))
-    parser.add_argument('--number', type=int, required=True, help='Part 1 or Part 2')
+    parser.add_argument('--part', type=int, required=True, help='Part 1 or Part 2')
     parser.add_argument("slopes", type=argparse.FileType('r'))
 
     args = parser.parse_args()
 
     if (len(sys.argv) > 1):
         with args.file as input_file:
-            if args.number == 1:
+            if args.part == 1:
                 count_trees_1(input_file, 3, 1)
-            elif args.number == 2:
+            elif args.paert == 2:
                 with args.slopes as slopes_file:
                     count_trees_2(input_file, slopes_file)
     else:

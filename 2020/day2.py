@@ -80,15 +80,15 @@ def check_passwords_2(input_file):
 def main():
     parser = argparse.ArgumentParser(description='Check passwords')
     parser.add_argument('file', type=argparse.FileType('r'))
-    parser.add_argument('--number', type=int, required=True, help='How many nums to add/multiply.')
+    parser.add_argument('--part', type=int, required=True, help='How many nums to add/multiply.')
 
     args = parser.parse_args()
 
     if (len(sys.argv) > 1):
         with args.file as input_file:
-            if args.number == 1:
+            if args.part == 1:
                 check_passwords_1(input_file)
-            elif args.number == 2:
+            elif args.part == 2:
                 check_passwords_2(input_file)
     else:
         print_usage(sys.argv[0], args.file)
