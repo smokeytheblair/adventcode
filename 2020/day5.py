@@ -24,7 +24,7 @@ def load_inputs(input_file):
     return report
 
 def find_row(boarding_pass, min_row, max_row):
-########    print(f"find_row({boarding_pass}, {min_row}, {max_row})")
+#    print(f"find_row({boarding_pass}, {min_row}, {max_row})")
     row = (max_row + min_row) // 2
 
     if len(boarding_pass) == 0:
@@ -60,9 +60,9 @@ def find_column(boarding_pass, min_col, max_col):
 def seat_id(boarding_pass, min_row, max_row, min_col, max_col):
     current_seat_id = 0
 
-    row = find_row(boarding_pass, min_row, max_row-1)
+    row = find_row(boarding_pass, min_row, max_row)
 #    print(f"{boarding_pass} row {row}")
-    col = find_column(boarding_pass, min_col, max_col-1)
+    col = find_column(boarding_pass, min_col, max_col)
 #    print(f"{boarding_pass} col {col}")
 
     current_seat_id = (row * 8) + col
@@ -77,7 +77,7 @@ def part_1(input_file, min_row, max_row, min_col, max_col):
 
     for boardingpass in passes:
         current_seat_id = seat_id(boardingpass, min_row, max_row, min_col, max_col)
-        print(f"{boardingpass} has seat id {current_seat_id}")
+#        print(f"{boardingpass} has seat id {current_seat_id}")
         if highest_seat < current_seat_id:
             highest_seat = current_seat_id
 
@@ -104,8 +104,11 @@ def part_2(input_file, min_row, max_row, min_col, max_col):
         if last_seat == 0:
             last_seat = sid
 
-        if sid != last_seat and abs(sid - last_seat) == 2:
+#        print(f"sid: {sid}, last_seat: {last_seat}, my_seat: {my_seat}")
+        if sid != last_seat and abs(sid - last_seat) > 1:
             my_seat = last_seat + 1
+
+        last_seat = sid
 
         
     print(f"My seat id: {my_seat}")
