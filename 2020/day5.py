@@ -99,7 +99,7 @@ def part_2(input_file, min_row, max_row, min_col, max_col):
 
     last_seat = 0
     seats.sort()
-    print(seats)
+#    print(seats)
     for sid in seats:
         if last_seat == 0:
             last_seat = sid
