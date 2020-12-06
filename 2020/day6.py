@@ -1,6 +1,7 @@
 import sys
 import argparse
 import math
+from collections import defaultdict
 
 reset_report = None
 
@@ -46,6 +47,15 @@ def count_group(question):
 
     return len(unique)
 
+def count_group_strict(question):
+    unique = []
+
+    for letter in question:
+        if letter not in unique:
+            unique.append(letter)
+
+    return len(unique)
+
 def part_1(input_file):
     questions = load_inputs(input_file)
     questions = make_groups(questions)
@@ -61,7 +71,34 @@ def part_1(input_file):
     print(f"Answer: {sum(counts)}")
 
 def part_2(input_file):
-    pass
+    questions = load_inputs(input_file)
+    
+#    print(questions)
+
+    members_in_group = 0
+    counts = defaultdict(int)
+    final_counts = 0
+    for question in questions:
+        if question == "":
+            for answer in counts.values():
+                if answer == members_in_group:
+                    final_counts += 1
+
+            members_in_group = 0
+            counts = defaultdict(int)
+            continue
+
+        members_in_group += 1
+        for letter in question:
+            counts[letter] += 1
+#        print(f"{question}:{length}")
+
+    
+    for answer in counts.values():
+        if answer == members_in_group:
+            final_counts += 1
+
+    print(f"Answer: {final_counts}")
 
 def main():
     parser = argparse.ArgumentParser(description="compute qustions.")
