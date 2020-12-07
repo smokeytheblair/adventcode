@@ -62,6 +62,22 @@ def find_gold_bag(rule_tree, current_rule):
 
     return False
 
+def count_bags(rule_tree, current_rule):
+    if rule_tree.get(current_rule) is None:
+        return 0
+
+    count = 0
+    for rule in rule_tree[current_rule]:
+#        print(f"count_bags - {rule}")
+        current_count = 1
+        if rule[0].isnumeric():
+            count += int(rule[0])
+            current_count = int(rule[0])
+
+        count += current_count * count_bags(rule_tree, rule[2:])
+
+    return count
+
 def part_1(input_file):
     rules = load_inputs(input_file)
     rules = make_rule_tree(rules)
@@ -81,8 +97,13 @@ def part_1(input_file):
     print(f"Bags that can hold shiny gold: {count}")
 
 def part_2(input_file):
-    pass
+    rules = load_inputs(input_file)
+    rules = make_rule_tree(rules)
 
+    count = count_bags(rules, "shiny gold")
+
+    print(f"Shiny gold bags require {count} additional bags.")
+    
 def main():
     parser = argparse.ArgumentParser(description="Figure luggage rules.")
     parser.add_argument('file', type=argparse.FileType('r'))
