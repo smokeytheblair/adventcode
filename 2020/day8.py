@@ -33,19 +33,19 @@ def make_program(instructions):
 
     return program
 
-def part_1(input_file):
-    instructions = load_inputs(input_file)
-    program = make_program(instructions)
-    
+def run_program(program):
+    finished_normally = True
     accumulator = 0
     instr = 0
+    last_instr = 0
     while instr < len(program):
         instruction = program[instr]
         if instruction[2] > 0 :
+            finished_normally = False
             break
         
         instruction[2] += 1 #count of visits to this instruction
-        print(f"{instruction}")
+#        print(f"Last instruction ptr {last_instr}, current {instruction}")
         if instruction[0] == "nop":
             instr += 1
         elif instruction[0] == "acc":
@@ -54,10 +54,39 @@ def part_1(input_file):
         elif instruction[0] == "jmp":
             instr += int(instruction[1])
 
-    print(f"Accumulator: {accumulator}")
+        last_instr = instr
+
+    if finished_normally:
+        print(f"Accumulator: {accumulator}")
+
+    return finished_normally
+
+def fix_program(input_file, instr_index):
+    instructions = load_inputs(input_file)
+    program = make_program(instructions)
+
+    if program[instr_index][0] == "nop":
+        program[instr_index][0] = "jmp"
+    elif program[instr_index][0] == "jmp":
+        program[instr_index][0] = "nop"
+
+    return run_program(program)
+
+def part_1(input_file):
+    instructions = load_inputs(input_file)
+    program = make_program(instructions)
+    
+    run_program(program)
 
 def part_2(input_file):
-    pass
+    instructions = load_inputs(input_file)
+    program = make_program(instructions)
+    
+    finish_normally = False
+    for index in range(len(program)): 
+        if fix_program(input_file, index):
+            break
+            
 
 def main():
     parser = argparse.ArgumentParser(description="In flight boot code.")
