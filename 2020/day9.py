@@ -44,21 +44,31 @@ def test_codes(codes, preamble):
 
         if code_passes == False:
             print(f"Failed code: {codes[index]}")
+            break
 
+    return codes[index]
+
+def find_encryption_weakness(codes, bad_code):
+#    print(f"find_encryption_weakness({codes}, {bad_code})")
+    for num_codes in range(2, len(codes)):
+        for index in range(len(codes)):
+            if bad_code == sum(codes[index:index+num_codes]):
+                print(f"{codes[index:index+num_codes]}")
+                numbers = codes[index:index+num_codes]
+                lowest = min(numbers)
+                highest = max(numbers)
+                print(f"{lowest} + {highest} == {lowest + highest}")
+                break
 
 def part_1(input_file, preamble):
     codes = make_XMAS_code(load_inputs(input_file))
     test_codes(codes, preamble)    
 
-def part_2(input_file):
-    instructions = load_inputs(input_file)
-    program = make_program(instructions)
+def part_2(input_file, preamble):
+    codes = make_XMAS_code(load_inputs(input_file))
+    bad_code = test_codes(codes, preamble)    
     
-    finish_normally = False
-    for index in range(len(program)): 
-        if fix_program(input_file, index):
-            break
-            
+    find_encryption_weakness(codes, bad_code)
 
 def main():
     parser = argparse.ArgumentParser(description="Find incorrect XMAS code.")
@@ -73,7 +83,7 @@ def main():
             if args.part == 1:
                 part_1(input_file, int(args.preamble))
             elif args.part == 2:
-                part_2(input_file)
+                part_2(input_file, int(args.preamble))
     else:
         print_usage(sys.argv[0], args.file)
 
