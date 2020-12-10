@@ -48,7 +48,7 @@ def part_2(input_file):
 #    print(chargers[-1:])
 
     count = 0    
-    for set_size in range(1, len(chargers)+1):
+    for set_size in range(len(chargers)//3, len(chargers)+1):
         print(f"set_size = {set_size}")
         sub_chargers = itertools.combinations(chargers, set_size)
         counts = [0, 0, 0, 0]
