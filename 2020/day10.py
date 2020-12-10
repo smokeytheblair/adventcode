@@ -23,6 +23,25 @@ def load_inputs(input_file):
 
     return report
 
+def reduced(permutations):
+    reduced_permutations = []
+
+    bookmarked_idx = 0
+    for index in range(len(permutations)):
+        if index + 2 >= len(permutations):
+            reduced_permutations.append(1)
+        else:
+            check_list = permutations[index:index+3]
+            print(f"check_list {check_list}")
+            if math.prod(check_list) == 8:
+                reduced_permutations.append(7)
+                bookmarked_idx = index + 3
+            elif index >= bookmarked_idx: 
+                reduced_permutations.append(permutations[index])
+
+
+    return reduced_permutations
+
 def part_1(input_file):
     chargers = sorted(load_inputs(input_file))
 #    print(chargers[-1:])
@@ -45,35 +64,37 @@ def part_1(input_file):
 def part_2(input_file):
     chargers = sorted(load_inputs(input_file))
     phone_charger = chargers[-1:][0] + 3
-#    print(chargers[-1:])
+    chargers.append(phone_charger)
+    print(chargers)
 
-    count = 0    
-    for set_size in range(len(chargers)//3, len(chargers)+1):
-        print(f"set_size = {set_size}")
-        sub_chargers = itertools.combinations(chargers, set_size)
-        counts = [0, 0, 0, 0]
-        for sub in sub_chargers:
-            sub = sorted(sub)
-            sub.append(phone_charger)
-            sub = sorted(sub)
-            good_sequence = True
-            last_joltage = 0
-            for index in range(len(sub)):
-                if sub[index] - last_joltage <= 3:
-                    counts[sub[index] - last_joltage] += 1
-                else:
-                    good_sequence = False
-                    # print("ERROR: joltage gap greater than 3")
-                    break
+    count = 1    
+    counts = [0, 0, 0, 0]
+    permutations = []
+    last_joltage = 0
+    last_last_joltage = 0
+    for index in range(len(chargers)):
+        if chargers[index] - last_joltage == 3:
+            counts[chargers[index] - last_joltage] += 1
+            permutations.append(1)
+        elif chargers[index] - last_joltage == 1:
+            counts[chargers[index] - last_joltage] += 1
+            if last_joltage - last_last_joltage == 1:
+                permutations.append(2)
+            if last_joltage - last_last_joltage == 1:
+                count *= 2
+        else:
+            # print("ERROR: joltage gap greater than 3")
+            break
 
-                last_joltage = sub[index]
+        last_last_joltage = last_joltage
+        last_joltage = chargers[index]
 
-            if good_sequence == True:
-                print(f"testing sub set: {sub}")
-                count += 1
+    print(f"permutations {permutations}")
+    permutations = reduced(permutations)
+    print(f"pruned {permutations}")
 
-            
-    print(f"count of sub_sets = {count}")
+    print(f"count of numberic gaps = {counts}")            
+    print(f"count of sub_sets = {math.prod(permutations)}")
 
 def main():
     parser = argparse.ArgumentParser(description="Compute joltage gaps.")
