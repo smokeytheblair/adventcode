@@ -32,7 +32,7 @@ def reduced(permutations):
             reduced_permutations.append(1)
         else:
             check_list = permutations[index:index+3]
-            print(f"check_list {check_list}")
+            # print(f"check_list {check_list}")
             if math.prod(check_list) == 8:
                 reduced_permutations.append(7)
                 bookmarked_idx = index + 3
