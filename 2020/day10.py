@@ -43,7 +43,37 @@ def part_1(input_file):
     print(f"{counts[1]} * {counts[3]} = {counts[1]*counts[3]}")
 
 def part_2(input_file):
-    codes = load_inputs(input_file)
+    chargers = sorted(load_inputs(input_file))
+    phone_charger = chargers[-1:][0] + 3
+#    print(chargers[-1:])
+
+    count = 0    
+    for set_size in range(1, len(chargers)+1):
+        print(f"set_size = {set_size}")
+        sub_chargers = itertools.combinations(chargers, set_size)
+        counts = [0, 0, 0, 0]
+        for sub in sub_chargers:
+            sub = sorted(sub)
+            sub.append(phone_charger)
+            sub = sorted(sub)
+            good_sequence = True
+            last_joltage = 0
+            for index in range(len(sub)):
+                if sub[index] - last_joltage <= 3:
+                    counts[sub[index] - last_joltage] += 1
+                else:
+                    good_sequence = False
+                    # print("ERROR: joltage gap greater than 3")
+                    break
+
+                last_joltage = sub[index]
+
+            if good_sequence == True:
+                print(f"testing sub set: {sub}")
+                count += 1
+
+            
+    print(f"count of sub_sets = {count}")
 
 def main():
     parser = argparse.ArgumentParser(description="Compute joltage gaps.")
