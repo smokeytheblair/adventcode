@@ -29,18 +29,18 @@ def process_navigation(direction, magnitude, curr_direction, x, y):
     directions = ["N", "E", "S", "W"]
 
     if direction == "N":
-        new_y -= magnitude
-    if direction == "S":
         new_y += magnitude
+    if direction == "S":
+        new_y -= magnitude
     if direction == "E":
         new_x += magnitude
     if direction == "W":
         new_x -= magnitude
     if direction == "F":
         if curr_direction == "N":
-            new_y -= magnitude
-        if curr_direction == "S":
             new_y += magnitude
+        if curr_direction == "S":
+            new_y -= magnitude
         if curr_direction == "E":
             new_x += magnitude
         if curr_direction == "W":
@@ -56,6 +56,40 @@ def process_navigation(direction, magnitude, curr_direction, x, y):
 
     return (new_x, new_y, new_dir)
 
+def process_navigation_waypoint(direction, magnitude, way_point, x, y):
+    print(f"process_nav_waypoint d: {direction}, m: {magnitude}, wp: {way_point}, x: {x}, y: {y}")
+    new_x, new_y = x, y
+    new_way_point = way_point.copy()
+    directions = ["N", "E", "S", "W"]
+
+    if direction == "N":
+        new_way_point[1] += magnitude
+    if direction == "S":
+        new_way_point[1] -= magnitude
+    if direction == "E":
+        new_way_point[0] += magnitude
+    if direction == "W":
+        new_way_point[0] -= magnitude
+    if direction == "F":
+        new_y += magnitude * way_point[1]
+        new_x += magnitude * way_point[0]
+    if direction == "R":
+        turns = magnitude//90
+        for turn in range(turns):
+            temp_x = new_way_point[0]
+            new_way_point[0] = new_way_point[1]
+            new_way_point[1] = -temp_x
+    if direction == "L":
+        turns = magnitude//90
+        for turn in range(turns):
+            temp_x = new_way_point[0]
+            new_way_point[0] = -new_way_point[1]
+            new_way_point[1] = temp_x
+    
+    print(f"new_x: {new_x}, new_y: {new_y}, new_way_point: {new_way_point}")
+    return (new_x, new_y, new_way_point)
+
+
 def part_1(input_file):
     navigation = load_inputs(input_file)
     
@@ -68,10 +102,21 @@ def part_1(input_file):
         x, y, curr_direction = process_navigation(direction, magnitude, curr_direction, x, y)
         print(f"x: {x}, y: {y}, curr_direction: {curr_direction}")
 
-    print(f"{x} + {y} == {x+y}")
+    print(f"abs({x}) + abs({y}) == {abs(x)+abs(y)}")
 
 def part_2(input_file):
-    pass
+    navigation = load_inputs(input_file)
+    
+    way_point = [10, 1]
+    x, y = 0, 0
+    for nav in navigation:
+        direction = nav[0]
+        magnitude = int(nav[1:])
+
+        x, y, way_point = process_navigation_waypoint(direction, magnitude, way_point, x, y)
+#        print(f"x: {x}, y: {y}, way_point: {way_point}")
+
+    print(f"abs({x}) + abs({y}) == {abs(x)+abs(y)}")
 
 def main():
     parser = argparse.ArgumentParser(description="Compute distance.")
