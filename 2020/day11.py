@@ -31,148 +31,244 @@ def print_seating(seating):
 
     print(f"Occupied seats: {occupied_seats}")
 
-def should_sit(seating, row_index, col_index):
+def find_seat_left(seating, curr_row, curr_col):
+    if curr_col <= 0:
+        return None
+    
+    return seating[curr_row][curr_col-1]
+
+def find_seat_right(seating, curr_row, curr_col):
+    if curr_col >= len(seating[curr_row])-1:
+        return None
+
+    return seating[curr_row][curr_col+1]
+
+def find_seat_down(seating, curr_row, curr_col):
+    if curr_row >= len(seating)-1:
+        return None
+
+    return seating[curr_row+1][curr_col]
+
+def find_seat_up(seating, curr_row, curr_col):
+    if curr_row <= 0:
+        return None
+
+    return seating[curr_row-1][curr_col]
+
+def find_seat_upleft(seating, curr_row, curr_col):
+    if curr_row <= 0:
+        return None
+    if curr_col <= 0:
+        return None
+
+    return seating[curr_row-1][curr_col-1]
+
+def find_seat_upright(seating, curr_row, curr_col):
+    if curr_row <= 0:
+        return None
+    if curr_col >= len(seating[curr_row])-1:
+        return None
+
+    return seating[curr_row-1][curr_col+1]
+
+def find_seat_downleft(seating, curr_row, curr_col):
+    if curr_col <= 0:
+        return None
+    if curr_row >= len(seating) - 1:
+        return None
+
+    return seating[curr_row+1][curr_col-1]
+
+def find_seat_downright(seating, curr_row, curr_col):
+    if curr_row >= len(seating) - 1:
+        return None
+    if curr_col >= len(seating[curr_row])-1:
+        return None
+
+    return seating[curr_row+1][curr_col+1]
+
+def should_sit(seating, row_index, col_index, first_seat):
     new_seat = seating[row_index][col_index]
     left, right, down, up = False, False, False, False
-    up_left, up_right, down_left, down_right = False, False, False, False
+    upleft, upright, downleft, downright = False, False, False, False
 
-    # left
-    if col_index == 0: 
-        left = True
-        up_left = True
-        down_left = True
-    elif seating[row_index][col_index-1] != "#":
-        left = True
-
-    # up left
-    if col_index != 0:    
-        # top edge - left
-        if row_index == 0:
-            up_left = True
-        elif seating[row_index-1][col_index-1] != "#":
-            up_left = True
-    
-        # bottom edge - left
-        if row_index == len(seating)-1:
-            down_left = True
-        elif seating[row_index+1][col_index-1] != "#":
-            down_left = True
-        
-    # right
-    if col_index == len(seating[row_index])-1:
-        right = True
-        down_right = True
-        up_right = True
-    elif seating[row_index][col_index+1] != "#":
-        right = True 
-
-    if col_index < len(seating[row_index])-1:
-        # top edge
-        if row_index == 0:
-            up_right = True
-        elif seating[row_index-1][col_index+1] != "#":
-            up_right = True
-        # bottom edge
-        if row_index == len(seating)-1:
-            down_right = True
-        elif seating[row_index+1][col_index+1] != "#":
-            down_right = True
-
-    # up
-    if row_index == 0:
-        up = True
-        up_left = True
-        up_right = True
-    elif seating[row_index-1][col_index] != "#":
-        up = True
+    row_offset, col_offset = 0, 0
 
     # down
-    if row_index == len(seating)-1:
-        down = True
-        down_left = True
-        dodwn_right = True
-    elif seating[row_index+1][col_index] != "#":
+    if first_seat:
+        while find_seat_down(seating, row_index+row_offset, col_index) == ".":
+            row_offset += 1
+
+    if find_seat_down(seating, row_index+row_offset, col_index) != "#":
         down = True
 
-    if left and right and up and down and up_left and down_left and up_right and down_right:
+    row_offset = 0
+
+    # up
+    if first_seat:
+        while find_seat_up(seating, row_index-row_offset, col_index) == ".":
+            row_offset += 1
+
+    if find_seat_up(seating, row_index-row_offset, col_index) != "#":
+        up = True
+
+    row_offset = 0
+
+    # left
+    if first_seat:
+        while find_seat_left(seating, row_index, col_index-col_offset) == ".":
+            col_offset += 1
+
+    if find_seat_left(seating, row_index, col_index-col_offset) != "#":
+        left = True
+
+    col_offset = 0
+
+    # right
+    if first_seat:
+        while find_seat_right(seating, row_index, col_index+col_offset) == ".":
+            col_offset += 1
+
+    if find_seat_right(seating, row_index, col_index+col_offset) != "#":
+        right = True
+
+    col_offset = 0
+
+    # up-right
+    if first_seat:
+        while find_seat_upright(seating, row_index-row_offset, col_index+col_offset) == ".":
+            col_offset += 1
+            row_offset += 1
+
+    if find_seat_upright(seating, row_index-row_offset, col_index+col_offset) != "#":
+        upright = True
+
+    row_offset, col_offset = 0, 0
+
+    # down right
+    if first_seat:
+        while find_seat_downright(seating, row_index+row_offset, col_index+col_offset) == ".":
+            col_offset += 1
+            row_offset += 1
+
+    if find_seat_downright(seating, row_index+row_offset, col_index+col_offset) != "#":
+        downright = True
+
+    row_offset, col_offset = 0, 0
+
+    # down left
+    if first_seat:
+        while find_seat_downleft(seating, row_index+row_offset, col_index-col_offset) == ".":
+            col_offset += 1
+            row_offset += 1
+
+    if find_seat_downleft(seating, row_index+row_offset, col_index-col_offset) != "#":
+        downleft = True
+
+    row_offset, col_offset = 0, 0
+
+    # up left
+    if first_seat:
+        while find_seat_upleft(seating, row_index-row_offset, col_index-col_offset) == ".":
+            col_offset += 1
+            row_offset += 1
+
+    if find_seat_upleft(seating, row_index-row_offset, col_index-col_offset) != "#":
+        upleft = True
+ 
+    if down and up and left and right and downleft and downright and upleft and upright:
         new_seat = "#"
 
     return new_seat
 
-def should_stand(seating, row_index, col_index, occupied_limit):
+def should_stand(seating, row_index, col_index, occupied_limit, first_seat):
     new_seat = seating[row_index][col_index]
     count_occupied = 0
+#    print(f"checking {row_index}, {col_index}, {new_seat}")
 
-    # left edge
-    if col_index == 0:
-        pass
-    elif seating[row_index][col_index-1] == "#":
-        count_occupied +=1
+    row_offset, col_offset = 0, 0
 
-    if col_index != 0:    
-        # top edge - left
-        if row_index == 0:
-            pass
-        elif seating[row_index-1][col_index-1] == "#":
-            count_occupied += 1
-    
-        # bottom edge - left
-        if row_index == len(seating)-1:
-            pass
-        elif seating[row_index+1][col_index-1] == "#":
-            count_occupied +=1
-        
-    # right edge
-    if col_index == len(seating[row_index])-1:
-        pass
-    elif seating[row_index][col_index+1] == "#":
-        count_occupied +=1
+    # down
+    if first_seat:
+        while find_seat_down(seating, row_index+row_offset, col_index) == ".":
+            row_offset += 1
 
-    if col_index < len(seating[row_index])-1:
-        # top edge
-        if row_index == 0:
-            pass
-        elif seating[row_index-1][col_index+1] == "#":
-            count_occupied += 1
-        # bottom edge
-        if row_index == len(seating)-1:
-            pass
-        elif seating[row_index+1][col_index+1] == "#":
-            count_occupied +=1
+    if find_seat_down(seating, row_index+row_offset, col_index) == "#":
+        count_occupied += 1
 
-    # top edge
-    if row_index == 0:
-        pass
-    elif seating[row_index-1][col_index] == "#":
-        count_occupied +=1
-#        # left edge
-#        if col_index == 0:
-#            pass
-#        elif seating[row_index-1][col_index - 1] == "#":
-#            count_occupied += 1
-#
-#        #right edge
-#        if col_index == len(seating[row_index]) - 1:
-#            pass
-#        elif seating[row_index-1][col_index+1] == "#":
-#            count_occupied += 1
+    row_offset = 0
 
-    # bottom edge
-    if row_index == len(seating)-1:
-        pass
-    elif seating[row_index+1][col_index] == "#":
-        count_occupied +=1
-#        # left edge
-#        if col_index == 0:
-#            pass
-#        elif seating[row_index+1][col_index - 1] == "#":
-#            count_occupied += 1
-#
-#        #right edge
-#        if col_index == len(seating[row_index]) - 1:
-#            pass
-#        elif seating[row_index+1][col_index+1] == "#":
-#            count_occupied += 1
+    # up
+    if first_seat:
+        while find_seat_up(seating, row_index-row_offset, col_index) == ".":
+            row_offset += 1
+
+    if find_seat_up(seating, row_index-row_offset, col_index) == "#":
+        count_occupied += 1
+
+    row_offset = 0
+
+    # left
+    if first_seat:
+        while find_seat_left(seating, row_index, col_index-col_offset) == ".":
+            col_offset += 1
+
+    if find_seat_left(seating, row_index, col_index-col_offset) == "#":
+        count_occupied += 1
+
+    col_offset = 0
+
+    # right
+    if first_seat:
+        while find_seat_right(seating, row_index, col_index+col_offset) == ".":
+            col_offset += 1
+
+    if find_seat_right(seating, row_index, col_index+col_offset) == "#":
+        count_occupied += 1
+
+    col_offset = 0
+
+    # up-right
+    if first_seat:
+        while find_seat_upright(seating, row_index-row_offset, col_index+col_offset) == ".":
+            col_offset += 1
+            row_offset += 1
+
+    if find_seat_upright(seating, row_index-row_offset, col_index+col_offset) == "#":
+        count_occupied += 1
+
+    row_offset, col_offset = 0, 0
+
+    # down right
+    if first_seat:
+        while find_seat_downright(seating, row_index+row_offset, col_index+col_offset) == ".":
+            col_offset += 1
+            row_offset += 1
+
+    if find_seat_downright(seating, row_index+row_offset, col_index+col_offset) == "#":
+        count_occupied += 1
+
+    row_offset, col_offset = 0, 0
+
+    # down left
+    if first_seat:
+        while find_seat_downleft(seating, row_index+row_offset, col_index-col_offset) == ".":
+            col_offset += 1
+            row_offset += 1
+
+    if find_seat_downleft(seating, row_index+row_offset, col_index-col_offset) == "#":
+        count_occupied += 1
+
+    row_offset, col_offset = 0, 0
+
+    # up left
+    if first_seat:
+        while find_seat_upleft(seating, row_index-row_offset, col_index-col_offset) == ".":
+            col_offset += 1
+            row_offset += 1
+
+    if find_seat_upleft(seating, row_index-row_offset, col_index-col_offset) == "#":
+        count_occupied += 1
  
     if count_occupied >= occupied_limit:
 #        print(f"seat[{row_index}][{col_index}] has {count_occupied} occupied adjacent.")
@@ -180,26 +276,26 @@ def should_stand(seating, row_index, col_index, occupied_limit):
 
     return new_seat
 
-def find_seat_status(seating, row_index, col_index, occupied_limit):
+def find_seat_status(seating, row_index, col_index, occupied_limit, first_seat):
     current_seat = seating[row_index][col_index]
 #    print(f"seat[{row_index}][{col_index}] = {current_seat}")
 
     if current_seat == "L":
-        current_seat = should_sit(seating, row_index, col_index)
+        current_seat = should_sit(seating, row_index, col_index, first_seat)
     elif current_seat == "#":
-        current_seat = should_stand(seating, row_index, col_index, occupied_limit)
+        current_seat = should_stand(seating, row_index, col_index, occupied_limit, first_seat)
     else: # "."
         pass
 
     return current_seat
 
-def apply_rules(seating, occupied_limit):
+def apply_rules(seating, occupied_limit, first_seat):
     new_seating = []
     new_row = ""
 
     for row_index in range(len(seating)):
         for col_index in range(len(seating[row_index])):
-            seat_status = find_seat_status(seating, row_index, col_index, occupied_limit)
+            seat_status = find_seat_status(seating, row_index, col_index, occupied_limit, first_seat)
             new_row += seat_status
         
         new_seating.append(new_row)
@@ -214,8 +310,6 @@ def compare_seating_charts(old_seating, new_seating):
         new_row = new_seating[index]
 
         if old_row != new_row:
-            print(f"index: {index}, old_row: {old_row}")
-            print(f"index: {index}, new_row: {new_row}")
             return False
 
     return True
@@ -224,17 +318,27 @@ def part_1(input_file, occupied_limit):
     seating = load_inputs(input_file)
     print_seating(seating)
     
-    new_seating = apply_rules(seating, occupied_limit)
+    new_seating = apply_rules(seating, occupied_limit, False)
 
     while compare_seating_charts(seating, new_seating) == False:
         print_seating(new_seating)
         seating = new_seating.copy()
-        new_seating = apply_rules(seating, occupied_limit)
+        new_seating = apply_rules(seating, occupied_limit, False)
 
     print_seating(new_seating)
 
 def part_2(input_file, occupied_limit):
-    print(f"part2")
+    seating = load_inputs(input_file)
+    print_seating(seating)
+    
+    new_seating = apply_rules(seating, occupied_limit, True)
+
+    while compare_seating_charts(seating, new_seating) == False:
+        print_seating(new_seating)
+        seating = new_seating.copy()
+        new_seating = apply_rules(seating, occupied_limit, True)
+
+    print_seating(new_seating)
 
 def main():
     parser = argparse.ArgumentParser(description="Arrange seating.")
