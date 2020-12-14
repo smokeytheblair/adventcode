@@ -1,7 +1,7 @@
 import sys
 import argparse
 import math
-import itertools
+from collections import defaultdict
 
 reset_report = None
 
@@ -30,6 +30,16 @@ def convert_routes(bus_routes):
         
     return (arrival, buses)
 
+def convert_routes_with_gaps(bus_routes):
+    arrival = int(bus_routes[0])
+    buses = bus_routes[1].split(",")
+
+    for bus in buses:
+        if bus.isnumeric():
+            buses[buses.index(bus)] = int(bus)
+    
+    return (arrival, buses)
+
 def find_soonest_bus(arrival, buses):
     deltas = []
 
@@ -44,6 +54,46 @@ def find_soonest_bus(arrival, buses):
     print(f"bus id: {bus_id}")
     return (bus_id, delta)
 
+def gcd(a, b):
+    while b > 0:
+        a, b = b, a%b
+    return a
+
+def lcm(a, b):
+    return a * b //  gcd(a, b)
+
+def find_soonest_series(buses):
+    bus_index = []
+    just_buses = []
+    first_bus = None
+    offset = 0
+    for bus in buses:
+        if type(bus) == int:
+            bus_index.append(buses.index(bus))
+            just_buses.append(bus)
+            if first_bus is None:
+                first_bus =  bus
+            if offset == 0:
+                offset = first_bus
+
+    t = offset
+    print(f"starting the search at t: {t}")
+    failed = False
+    while not failed:
+        for index in bus_index:
+#            print (f"index: {index}, bus: {buses[index]}, t: {t}")
+#            print(f"(t%bus) - index == {(t%buses[index])-index}")
+            if 0 != ((t+index) % buses[index]):
+                failed = True
+                 
+        if not failed:
+            break;
+        t += offset
+        failed = False
+
+    print(f"t: {t}")
+    return t
+
 def part_1(input_file):
     bus_routes = load_inputs(input_file)
     arrival, buses = convert_routes(bus_routes)
@@ -53,7 +103,12 @@ def part_1(input_file):
     print(f"{bus_id} * {delta} = {bus_id * delta}")
 
 def part_2(input_file):
-    pass
+    bus_routes = load_inputs(input_file)
+    arrival, buses = convert_routes_with_gaps(bus_routes)
+
+    timestamp = find_soonest_series(buses)
+
+    print(f"buses: {buses} line up at {timestamp}")
 
 def main():
     parser = argparse.ArgumentParser(description="Find bus routes.")
@@ -73,4 +128,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
