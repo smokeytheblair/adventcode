@@ -73,10 +73,9 @@ def find_soonest_series(buses):
             just_buses.append(bus)
             if first_bus is None:
                 first_bus =  bus
-            if offset == 0:
-                offset = first_bus
 
-    t = offset
+    offset = first_bus
+    t = first_bus * max(just_buses)
     print(f"starting the search at t: {t}")
     failed = False
     while not failed:
