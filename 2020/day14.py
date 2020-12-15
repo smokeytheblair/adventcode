@@ -1,6 +1,5 @@
 import sys
 import argparse
-import math
 from collections import defaultdict
 
 reset_report = None
@@ -23,28 +22,61 @@ def load_inputs(input_file):
 
     return report
 
-def convert_routes(bus_routes):
-    arrival = int(bus_routes[0])
-    buses = bus_routes[1].replace("x,", "").split(",")
-    buses = [int(bus) for bus in buses]
-        
-    return (arrival, buses)
+def convert_program(program):
+    new_program = [] 
+
+    for instr in program:
+        vals = instr.split(" = ")
+        new_program.append((vals[0], int(vals[1]) if (vals[1]).isnumeric() else vals[1]))
+    
+    return new_program
+
+def apply_bitmask(bitmask, value, register):
+    length = len(bitmask)
+    val_bits = format(value, f"0{length}b") 
+    reg_bits = format(register, f"0{length}b")
+    new_bits ="" 
+#    print(f"bitmask: {bitmask}, value: {value} or {val_bits}, reg: {register} or {reg_bits}")
+    for mask, new_bit, reg_bit in zip(bitmask, val_bits, reg_bits):
+        if mask == "X":
+            new_bits += new_bit# if new_bit == "1" else new_bit
+        else:
+            new_bits += mask
+
+#    print(f"new binary: {new_bits}")
+    return int(new_bits, 2)
+
+def run_program(program):
+    registers = defaultdict(int)
+
+    mask = ""
+    for instr in program:
+        key = instr[0]
+        val = instr[1]
+
+        if key == "mask":
+            mask = val
+        elif key.find("mem") != -1:
+            register_num = int(key[4:-1])
+            num = val
+            new_num = apply_bitmask(mask, num, registers[register_num])
+            registers[register_num] = new_num
+#            print(f"num: {num}, new_num: {new_num}")
+            
+    return sum(registers.values())
+
 
 def part_1(input_file):
-    bus_routes = load_inputs(input_file)
-    arrival, buses = convert_routes(bus_routes)
+    program = load_inputs(input_file)
+    print(program)
+    program = convert_program(program)
 
-    bus_id, delta = find_soonest_bus(arrival, buses)
+    number = run_program(program)
 
-    print(f"{bus_id} * {delta} = {bus_id * delta}")
+    print(f"{number}")
 
 def part_2(input_file):
-    bus_routes = load_inputs(input_file)
-    arrival, buses = convert_routes_with_gaps(bus_routes)
-
-    timestamp = find_soonest_series(buses)
-
-    print(f"buses: {buses} line up at {timestamp}")
+    pass
 
 def main():
     parser = argparse.ArgumentParser(description="Load docking program.")

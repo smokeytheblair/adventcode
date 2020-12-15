@@ -2,6 +2,7 @@ import sys
 import argparse
 import math
 from collections import defaultdict
+import itertools
 
 reset_report = None
 
@@ -74,6 +75,13 @@ def find_soonest_series(buses):
             if first_bus is None:
                 first_bus =  bus
 
+    lcms = []
+    combos = itertools.combinations(just_buses, 2)
+    for combo in combos:
+        lcms.append(lcm(combo[0], combo[1]))
+
+    print(f"lcms: {lcms}")
+    
     offset = first_bus
     t = first_bus * max(just_buses)
     print(f"starting the search at t: {t}")
