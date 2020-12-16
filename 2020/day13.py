@@ -82,7 +82,7 @@ def find_soonest_series(buses):
 
     print(f"lcms: {lcms}")
     
-    offset = first_bus
+    offset = first_bus * max(just_buses)
     t = first_bus * max(just_buses)
     print(f"starting the search at t: {t}")
     failed = False

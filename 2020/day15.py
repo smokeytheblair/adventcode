@@ -25,7 +25,7 @@ def load_inputs(input_file):
 def convert_program(program):
     return [int(x) for x in program[0].split(",")]
 
-def run_program(program):
+def run_program(program, n):
     print(f"run_program: {program}")
 
     index = len(program)
@@ -33,34 +33,40 @@ def run_program(program):
     next_num = 0
     game = program[:-1]
     
-    while index < 2020:
-        print(f"num: {num}, index: {index}, game: {game}")
+    while index < n:
+#        print(f"num: {num}, index: {index}, game: {game}")
         if num in game:
             next_num = (index - 1) - (len(game) - game[::-1].index(num) - 1)
         else:
             next_num = 0
 
-        print(f"num: {num}, next_num: {next_num}")
+#        print(f"num: {num}, next_num: {next_num}")
         game.append(num)
         num = next_num
         index += 1
 
             
-        print(num)
+#        print(num)
     
     return num
 
-def part_1(input_file):
+def part_1(input_file, n):
     program = load_inputs(input_file)
     print(program)
     program = convert_program(program)
 
-    number = run_program(program)
+    number = run_program(program, n)
 
     print(f"{number}")
 
-def part_2(input_file):
-    pass
+def part_2(input_file, n):
+    program = load_inputs(input_file)
+    print(program)
+    program = convert_program(program)
+
+    number = run_program(program, n)
+
+    print(f"{number}")
 
 def main():
     parser = argparse.ArgumentParser(description="Load docking program.")
@@ -72,9 +78,9 @@ def main():
     if (len(sys.argv) > 1):
         with args.file as input_file:
             if args.part == 1:
-                part_1(input_file)
+                part_1(input_file, 2020)
             elif args.part == 2:
-                part_2(input_file)
+                part_2(input_file, 30000000)
     else:
         print_usage(sys.argv[0], args.file)
 
