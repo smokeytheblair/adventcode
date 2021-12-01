@@ -1,8 +1,5 @@
 import sys
 import argparse
-import math
-from collections import Counter
-from operator import xor
 
 reset_report = None
 
@@ -35,7 +32,22 @@ def count_depths(input_file):
         prev_depth = int(depth)
 
     print(f"Count = {count}")
-     
+    
+def count_depths_2(input_file):
+    depths = load_inputs(input_file)
+
+    count = 0
+    for index in range(len(depths)):
+        if index < len(depths)-3:
+            A = int(depths[index]) + int(depths[index+1]) + int(depths[index+2])
+            B = int(depths[index+1]) + int(depths[index+2]) + int(depths[index+3])
+#            print(f"A = {A} < B = {B}")
+            if A < B:
+                count += 1
+#                print(f"count = {count}")
+
+    print(f"Count = {count}")
+
 def main():
     parser = argparse.ArgumentParser(description="Count depth increases.")
     parser.add_argument('file', type=argparse.FileType('r'))
@@ -47,9 +59,8 @@ def main():
         with args.file as input_file:
             if args.part == 1:
                 count_depths(input_file)
-            elif args.paert == 2:
-                with args.slopes as slopes_file:
-                    count_trees_2(input_file, slopes_file)
+            elif args.part == 2:
+                count_depths_2(input_file)
     else:
         print_usage(sys.argv[0], args.file)
 
