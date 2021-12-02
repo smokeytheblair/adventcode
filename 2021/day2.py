@@ -43,20 +43,22 @@ def compute_path(input_file):
     print(f"forward:{forward} * depth:{depth} = {forward*depth}")
 
     
-def count_depths_2(input_file):
-    depths = load_inputs(input_file)
+def compute_path_2(input_file):
+    directions = load_inputs(input_file)
 
-    count = 0
-    for index in range(len(depths)):
-        if index < len(depths)-3:
-            A = int(depths[index]) + int(depths[index+1]) + int(depths[index+2])
-            B = int(depths[index+1]) + int(depths[index+2]) + int(depths[index+3])
-#            print(f"A = {A} < B = {B}")
-            if A < B:
-                count += 1
-#                print(f"count = {count}")
+    aim = 0
+    forward = 0
+    depth = 0
+    for direction in directions:
+        if direction[0] == "forward":
+            forward += direction[1]
+            depth += aim * direction[1]
+        elif direction[0] == "up":
+            aim -= direction[1]
+        elif direction[0] == "down":
+            aim += direction[1]
 
-    print(f"Count = {count}")
+    print(f"aim:{aim}, forward:{forward} * depth:{depth} = {forward*depth}")
 
 def main():
     parser = argparse.ArgumentParser(description="Compute path.")
@@ -70,7 +72,7 @@ def main():
             if args.part == 1:
                 compute_path(input_file)
             elif args.part == 2:
-                count_depths_2(input_file)
+                compute_path_2(input_file)
     else:
         print_usage(sys.argv[0], args.file)
 
