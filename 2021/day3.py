@@ -20,15 +20,15 @@ def load_inputs(input_file):
 
     inputs = []
     for line in report:
-        inputs.append(line)
+        inputs.append(line.replace("\n", ""))
 
     return inputs
 
 def compute_power(input_file):
     directions = load_inputs(input_file)
-    print(f"{directions}")
+#    print(f"{directions}")
 
-    num_bits = len(directions[0])-1
+    num_bits = len(directions[0])
     count_0 = 0
     count_1 = 0
     gamma_rate = ""
@@ -36,15 +36,15 @@ def compute_power(input_file):
     for i in range(num_bits):
         count_0 = 0
         count_1 = 0
-        print(f"i: {i}")
+ #       print(f"i: {i}")
         for direction in directions:
-            print(f"direction[{i}] = {direction[i]}")
+  #          print(f"direction[{i}] = {direction[i]}")
             if direction[i] == "0":
                 count_0 += 1
             else:
                 count_1 += 1
 
-        print(f"count_0:{count_0}, count_1:{count_1}")
+#        print(f"count_0:{count_0}, count_1:{count_1}")
 
         if count_0 > count_1:
             gamma_rate += "0"
@@ -59,23 +59,99 @@ def compute_power(input_file):
 
     print(f"gamma rate:{gamma_int} * epsilon rate:{epsilon_int} = {gamma_int*epsilon_int}")
 
-    
-def compute_power_2(input_file):
-    directions = load_inputs(input_file)
+def filter_o2_numbers(codes, i):
+#    print(f"filter o2 i: {i}, codes: {codes}")
 
-    aim = 0
-    forward = 0
-    depth = 0
-    for direction in directions:
-        if direction[0] == "forward":
-            forward += direction[1]
-            depth += aim * direction[1]
-        elif direction[0] == "up":
-            aim -= direction[1]
-        elif direction[0] == "down":
-            aim += direction[1]
+    if len(codes) <= 1:
+        return codes
 
-    print(f"aim:{aim}, forward:{forward} * depth:{depth} = {forward*depth}")
+    if i >= len(codes[0]):
+        return codes
+
+    count_0 = 0
+    count_1 = 0
+    o2_nums = []
+
+    for code in codes:
+        if code[i] == "0":
+            count_0 += 1
+        else:
+            count_1 += 1
+
+    for code in codes:
+        if count_1 >= count_0 and code[i] == "1":
+            o2_nums.append(code)
+        elif count_0 > count_1 and code[i] == "0":
+            o2_nums.append(code)
+
+    return filter_o2_numbers(o2_nums, i+1)
+
+
+def filter_co2_numbers(codes, i):
+#    print(f"filter co2 i: {i}, codes: {codes}")
+    if len(codes) <= 1:
+        return codes
+
+    if i >= len(codes[0]):
+        return codes
+
+    count_0 = 0
+    count_1 = 0
+    co2_nums = []
+
+    for code in codes:
+        if code[i] == "0":
+            count_0 += 1
+        else:
+            count_1 += 1
+
+#    print(f"count_0 = {count_0}, count_1 = {count_1}")
+    for code in codes:
+        if count_0 <= count_1 and code[i] == "0":
+            co2_nums.append(code)
+        elif count_1 < count_0 and code[i] == "1":
+            co2_nums.append(code)
+
+    return filter_co2_numbers(co2_nums, i+1)
+
+def compute_o2_2(input_file):
+    codes = load_inputs(input_file)
+
+    num_bits = len(codes[0]) - 1
+    count_0 = 0
+    count_1 = 0
+    o2_nums = []
+    co2_nums = []
+    i = 0
+    #       print(f"i: {i}")
+    for code in codes:
+        #          print(f"direction[{i}] = {direction[i]}")
+        if code[i] == "0":
+            count_0 += 1
+        else:
+            count_1 += 1
+
+    for code in codes:
+        if count_0 > count_1 and code[i] == "0":
+            o2_nums.append(code)
+        elif count_1 >= count_0 and code[i] == "1":
+            o2_nums.append(code)
+
+    for code in codes:
+        if count_0 <= count_1 and code[i] == "0":
+            co2_nums.append(code)
+        elif count_1 < count_0 and code[i] == "1":
+            co2_nums.append(code)
+
+    o2_nums = filter_o2_numbers(o2_nums, 1)
+    co2_nums = filter_co2_numbers(co2_nums, 1)
+
+    print(f"o2 {o2_nums}, co2 {co2_nums}")
+
+    o2_setting = int(o2_nums[0],2)
+    co2_setting = int(co2_nums[0],2)
+
+    print(f"o2 * co2 = {o2_setting*co2_setting}")
 
 def main():
     parser = argparse.ArgumentParser(description="Compute power.")
@@ -89,7 +165,7 @@ def main():
             if args.part == 1:
                 compute_power(input_file)
             elif args.part == 2:
-                compute_power_2(input_file)
+                compute_o2_2(input_file)
     else:
         print_usage(sys.argv[0], args.file)
 
