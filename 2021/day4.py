@@ -53,14 +53,14 @@ def load_inputs(input_file):
     return bingo_cards
 
 def play_ball(ball_num):
-    print(f"Playing number {ball_num}")
+    print(f"\nPlaying number *** {ball_num} *** ")
     for card in bingo_cards:
         for row in card:
             for num in row:
                 if num[0] == ball_num:
                     num[1] = True
 
-    print_bingo_cards()
+    #print_bingo_cards()
 
 def card_wins(card):
     #check rows
@@ -104,9 +104,20 @@ def sum_unmarked_numbers(card):
 
     return sum
 
+def remove_winning_cards():
+    winning = True
+
+    while winning:
+        winner = check_cards()
+
+        if -1 < winner:
+            bingo_cards.remove(bingo_cards[winner])
+        else:
+            winning = False
+
 def play_bingo(input_file):
     load_inputs(input_file)
-    
+
     for num in bingo_balls:
         play_ball(num)
 
@@ -118,99 +129,25 @@ def play_bingo(input_file):
             print(f"Answer: {unmarked_sum} * {num} = {unmarked_sum * int(num)}")
             break
 
-def filter_o2_numbers(codes, i):
-#    print(f"filter o2 i: {i}, codes: {codes}")
+def lose_bingo(input_file):
+    load_inputs(input_file)
 
-    if len(codes) <= 1:
-        return codes
+    losing_cards = set([x for x in range(len(bingo_cards))])
+    print(losing_cards)
 
-    if i >= len(codes[0]):
-        return codes
+    for num in bingo_balls:
+        play_ball(num)
 
-    count_0 = 0
-    count_1 = 0
-    o2_nums = []
+        winner = check_cards()
 
-    for code in codes:
-        if code[i] == "0":
-            count_0 += 1
-        else:
-            count_1 += 1
+        if -1 < winner and 1 == len(bingo_cards):
+            print_bingo_cards()
+            unmarked_sum = sum_unmarked_numbers(bingo_cards[0])
+            print(f"Losing board {winner} score: {unmarked_sum} * {num} = {unmarked_sum * int(num)}")
+            break
 
-    for code in codes:
-        if count_1 >= count_0 and code[i] == "1":
-            o2_nums.append(code)
-        elif count_0 > count_1 and code[i] == "0":
-            o2_nums.append(code)
-
-    return filter_o2_numbers(o2_nums, i+1)
-
-
-def filter_co2_numbers(codes, i):
-#    print(f"filter co2 i: {i}, codes: {codes}")
-    if len(codes) <= 1:
-        return codes
-
-    if i >= len(codes[0]):
-        return codes
-
-    count_0 = 0
-    count_1 = 0
-    co2_nums = []
-
-    for code in codes:
-        if code[i] == "0":
-            count_0 += 1
-        else:
-            count_1 += 1
-
-#    print(f"count_0 = {count_0}, count_1 = {count_1}")
-    for code in codes:
-        if count_0 <= count_1 and code[i] == "0":
-            co2_nums.append(code)
-        elif count_1 < count_0 and code[i] == "1":
-            co2_nums.append(code)
-
-    return filter_co2_numbers(co2_nums, i+1)
-
-def compute_o2_2(input_file):
-    codes = load_inputs(input_file)
-
-    num_bits = len(codes[0]) - 1
-    count_0 = 0
-    count_1 = 0
-    o2_nums = []
-    co2_nums = []
-    i = 0
-    #       print(f"i: {i}")
-    for code in codes:
-        #          print(f"direction[{i}] = {direction[i]}")
-        if code[i] == "0":
-            count_0 += 1
-        else:
-            count_1 += 1
-
-    for code in codes:
-        if count_0 > count_1 and code[i] == "0":
-            o2_nums.append(code)
-        elif count_1 >= count_0 and code[i] == "1":
-            o2_nums.append(code)
-
-    for code in codes:
-        if count_0 <= count_1 and code[i] == "0":
-            co2_nums.append(code)
-        elif count_1 < count_0 and code[i] == "1":
-            co2_nums.append(code)
-
-    o2_nums = filter_o2_numbers(o2_nums, 1)
-    co2_nums = filter_co2_numbers(co2_nums, 1)
-
-    print(f"o2 {o2_nums}, co2 {co2_nums}")
-
-    o2_setting = int(o2_nums[0],2)
-    co2_setting = int(co2_nums[0],2)
-
-    print(f"o2 * co2 = {o2_setting*co2_setting}")
+        if -1 < winner and 1 < len(bingo_cards):
+            remove_winning_cards()
 
 def main():
     parser = argparse.ArgumentParser(description="Bingo")
@@ -224,7 +161,7 @@ def main():
             if args.part == 1:
                 play_bingo(input_file)
             elif args.part == 2:
-                compute_o2_2(input_file)
+                lose_bingo(input_file)
     else:
         print_usage(sys.argv[0], args.file)
 
