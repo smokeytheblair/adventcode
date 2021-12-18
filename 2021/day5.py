@@ -27,14 +27,14 @@ def count_overlaps(vectors):
             if vector_1 is vector_2:
                 continue
 
-            # if None is not already_checked.get(str(vector_1)):
-            #     continue
+            if True == already_checked.get(str(vector_1)+str(vector_2)):
+                continue
 
-            if None is not already_checked.get(str(vector_2)):
+            if True == already_checked.get(str(vector_2)+str(vector_1)):
                 continue
 
             #keep the lines going left to right
-            if int(vector_1[1][0]) < int(vector_1[0][0]):
+            if int(vector_1[0][1]) == int(vector_1[1][1]) and int(vector_1[1][0]) < int(vector_1[0][0]):
                 x_0 = int(vector_1[1][0])
                 y_0 = int(vector_1[1][1])
                 x_1 = int(vector_1[0][0])
@@ -103,44 +103,50 @@ def count_overlaps(vectors):
                 y_1 = y_3
                 y_3 = temp_y
 
-            print(f"comparing vector_1:{vector_1} to vector_2:{vector_2} as \n*** p0[{x_0},{y_0}], p1[{x_1},{y_1}], p2[{x_2},{y_2}], p3[{x_3},{y_3}]")
+                # print(f"swapped vector_1:{vector_1} with vector_2:{vector_2} as \n*** p0[{x_0},{y_0}], p1[{x_1},{y_1}], p2[{x_2},{y_2}], p3[{x_3},{y_3}]")
+
+            # print(f"comparing vector_1:{vector_1} to vector_2:{vector_2} as \n*** p0[{x_0},{y_0}], p1[{x_1},{y_1}], p2[{x_2},{y_2}], p3[{x_3},{y_3}]")
 
             if y_0 == y_1 == y_2 == y_3:
                 if x_1 > x_2:
                     count_delta = x_1 - x_2
                     if x_3 < x_1:
-                        count_delta -= x_3
+                        count_delta -= x_1 - x_3
+                        count_delta += 1
 
+                    print(f"*** p0[{x_0},{y_0}], p1[{x_1},{y_1}], p2[{x_2},{y_2}], p3[{x_3},{y_3}]")
                     print(f"vector_1: {vector_1} intersects with vector_2: {vector_2} : {count_delta} (parallel)")
                     count += count_delta
                 elif x_1 == x_2:
-                    print(f"vector_1: {vector_1} intersects with vector_2: {vector_2} : 1 (parallel)")
+                    # print(f"vector_1: {vector_1} intersects with vector_2: {vector_2} : 1 (parallel)")
                     count += 1
             elif x_0 == x_1 == x_2 == x_3:
                 if y_1 > y_2:
                     count_delta = y_1 - y_2
                     if y_3 < y_1:
-                        count_delta -= y_3
+                        count_delta -= y_1 - y_3
+                        count_delta += 1
+
+                    print(f"*** p0[{x_0},{y_0}], p1[{x_1},{y_1}], p2[{x_2},{y_2}], p3[{x_3},{y_3}]")
                     print(f"vector_1: {vector_1} intersects with vector_2: {vector_2} : {count_delta} (parallel)")
                     count += count_delta
                 elif y_1 < y_2:
                     count_delta = y_2 - y_1
                     if y_3 > y_1:
                         count_delta -= y_1
-                    print(f"vector_1: {vector_1} intersects with vector_2: {vector_2} : {count_delta} (parallel)")
+                    # print(f"vector_1: {vector_1} intersects with vector_2: {vector_2} : {count_delta} (parallel)")
                     count += count_delta
                 elif y_1 == y_2:
-                    print(f"vector_1: {vector_1} intersects with vector_2: {vector_2} : 1 (parallel)")
+                    # print(f"vector_1: {vector_1} intersects with vector_2: {vector_2} : 1 (parallel)")
                     count += 1
             elif y_0 == y_1 and x_0 <= x_2 and x_3 <= x_1 and y_0 >= y_2 and y_1 <= y_3:
-                print(f"vector_1: {vector_1} intersects with vector_2: {vector_2} : 1")
+                # print(f"vector_1: {vector_1} intersects with vector_2: {vector_2} : 1")
                 count += 1
             elif x_0 == x_1 and x_0 <= x_2 and x_3 >= x_1 and y_0 <= y_2 and y_1 >= y_3:
-                print(f"vector_1: {vector_1} intersects with vector_2: {vector_2} : 1")
+                # print(f"vector_1: {vector_1} intersects with vector_2: {vector_2} : 1")
                 count += 1
 
-            already_checked[str(vector_1)] = str(vector_2)
-            #already_checked[str(vector_2)] = str(vector_1)
+            already_checked[str(vector_1)+str(vector_2)] = True
 
     return count
 
