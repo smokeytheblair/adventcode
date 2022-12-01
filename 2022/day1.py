@@ -3,8 +3,6 @@ import argparse
 
 reset_report = None
 
-def print_usage(name, input_file):
-    print(f"Usage: python3 {name} {input_file}")
 
 def load_inputs(input_file):
     global reset_report
@@ -20,33 +18,50 @@ def load_inputs(input_file):
 
     return report
 
-def count_depths(input_file):
-    depths = load_inputs(input_file)
 
-    count = 0
-    prev_depth = 0
-    for depth in depths:
-        if 0 != prev_depth and int(depth) > prev_depth:
-            count += 1
+def count_calories(input_file):
+    meals = load_inputs(input_file)
 
-        prev_depth = int(depth)
+    calorie_sums = {}
+    elf_num = 0
+    for meal in meals:
+        if meal == '\n':
+            elf_num += 1
+            continue
 
-    print(f"Count = {count}")
-    
-def count_depths_2(input_file):
-    depths = load_inputs(input_file)
+        if None is calorie_sums.get(elf_num):
+            calorie_sums[elf_num] = 0
 
-    count = 0
-    for index in range(len(depths)):
-        if index < len(depths)-3:
-            A = int(depths[index]) + int(depths[index+1]) + int(depths[index+2])
-            B = int(depths[index+1]) + int(depths[index+2]) + int(depths[index+3])
-#            print(f"A = {A} < B = {B}")
-            if A < B:
-                count += 1
-#                print(f"count = {count}")
+        calorie_sums[elf_num] += int(meal)
 
-    print(f"Count = {count}")
+    glutton = max(calorie_sums.values())
+    print(f"Max calories = {glutton}")
+
+    return calorie_sums
+
+
+def count_calories_2(input_file):
+    meals = load_inputs(input_file)
+
+    calorie_sums = {}
+    elf_num = 0
+    for meal in meals:
+        if meal == '\n':
+            elf_num += 1
+            continue
+
+        if None is calorie_sums.get(elf_num):
+            calorie_sums[elf_num] = 0
+
+        calorie_sums[elf_num] += int(meal)
+
+    print(calorie_sums)
+
+    top_three = list(calorie_sums.values())
+    top_tree = top_three.sort()
+    print(top_three)
+    print(f"top_three = {sum(top_three[-3:])}")
+
 
 def main():
     parser = argparse.ArgumentParser(description="Count depth increases.")
@@ -55,14 +70,14 @@ def main():
 
     args = parser.parse_args()
 
-    if (len(sys.argv) > 1):
+    if len(sys.argv) > 1:
         with args.file as input_file:
             if args.part == 1:
-                count_depths(input_file)
+                count_calories(input_file)
             elif args.part == 2:
-                count_depths_2(input_file)
-    else:
-        print_usage(sys.argv[0], args.file)
+                count_calories_2(input_file)
+
+
 
 if __name__ == "__main__":
     main()
