@@ -19,77 +19,117 @@ def load_inputs(input_file):
     return report
 
 
+def create_stacks(crates_map):
+    crates = {}
+    for row in crates_map:
+        if 0 == len(crates):
+            for num in row.split('   '):
+                crates[int(num.strip())] = []
+        else:
+            print(f"row: {row}")
+            counter = 0
+            for key in crates.keys():
+                offset = key+(counter*3)
+                if offset < len(row):
+                    crate = row[offset]
+                else:
+                    crate = ' '
+
+                counter += 1
+                print(f"key: {key}, crate: {crate}")
+                if crate.isalnum():
+                    crates[key].append(crate)
+
+    print(f"crates: {crates}")
+    return crates
+
+
+def create_instructions(instructions_map):
+    instructions = []
+
+    for row in instructions_map:
+        terms = row.split(' ')
+
+        move = []
+        for term in terms:
+            if term.strip().isnumeric():
+                move.append(int(term))
+
+        instructions.append(move)
+
+    print(f"Instructions: {instructions}")
+    return instructions
+
+
+def move_crates(crates, instructions):
+    for instruction in instructions:
+        count = instruction[0]
+        src = instruction[1]
+        dest = instruction[2]
+
+        for i in range(count):
+            crates[dest].append(crates[src].pop(len(crates[src])-1))
+
+    return crates
+
+
+def move_crates_2(crates, instructions):
+    for instruction in instructions:
+        count = instruction[0]
+        src = instruction[1]
+        dest = instruction[2]
+
+        move_list = crates[src][-count:]
+
+        for i in range(count):
+            crates[dest].append(move_list[i])
+            crates[src].pop(len(crates[src])-1)
+
+    return crates
+
+
 def find_top_crates(input_file):
     crates_and_instructions = load_inputs(input_file)
 
-    index = crates_and_instructions.index('\n')
+    split_index = crates_and_instructions.index('\n')
 
-    crates_map = crates_and_instructions[:index]
+    crates_map = crates_and_instructions[:split_index]
     crates_map.reverse()
-    instructions = crates_and_instructions[index+1:]
+    instructions_map = crates_and_instructions[split_index+1:]
 
-    crates = {}
-    for stack in crates_map:
-        if 0 == len(crates):
-            for num in stack.split('   '):
-                crates[num.strip()] = []
+    crates = create_stacks(crates_map)
+    instructions = create_instructions(instructions_map)
 
-    print(f"crates: {crates}")
-    print(f"Instructions: {instructions}")
+    crates = move_crates(crates, instructions)
+
+    tops = ''
+    for stack in crates.values():
+        tops += stack[len(stack)-1]
+
+    print(f"new crates: {crates}")
+    print(f"Tops: {tops}")
 
 
-def count_score_2(input_file):
-    games = load_inputs(input_file)
+def find_top_crates_2(input_file):
+    crates_and_instructions = load_inputs(input_file)
 
-    my_points = 0
-    for game in games:
-        opponent, me = game.split()
+    split_index = crates_and_instructions.index('\n')
 
-        # rock
-        if 'A' == opponent:
-            # lose
-            if 'X' == me:
-                # scissors
-                my_points += 3 + 0
-            # draw
-            elif 'Y' == me:
-                # rock
-                my_points += 1 + 3
-            # win
-            elif 'Z':
-                # paper
-                my_points += 2 + 6
-        # paper
-        elif 'B' == opponent:
-            # lose
-            if 'X' == me:
-                # rock
-                my_points += 1 + 0
-            # draw
-            elif 'Y' == me:
-                # paper
-                my_points += 2 + 3
-            # win
-            elif 'Z':
-                # scissors
-                my_points += 3 + 6
-        # scissors
-        elif 'C' == opponent:
-            # lose
-            if 'X' == me:
-                # paper
-                my_points += 2 + 0
-            # draw
-            elif 'Y' == me:
-                # scissors
-                my_points += 3 + 3
-            # win
-            elif 'Z':
-                # rock
-                my_points += 1 + 6
+    crates_map = crates_and_instructions[:split_index]
+    crates_map.reverse()
+    instructions_map = crates_and_instructions[split_index+1:]
 
-    print(f"Points = {my_points}")
+    crates = create_stacks(crates_map)
+    instructions = create_instructions(instructions_map)
 
+    crates = move_crates_2(crates, instructions)
+
+    tops = ''
+    for stack in crates.values():
+        tops += stack[len(stack)-1]
+
+    print(f"new crates: {crates}")
+    print(f"Tops: {tops}")
 
 def main():
     parser = argparse.ArgumentParser(description="Day 5")
@@ -103,7 +143,7 @@ def main():
             if args.part == 1:
                 find_top_crates(input_file)
             elif args.part == 2:
-                count_score_2(input_file)
+                find_top_crates_2(input_file)
 
 
 if __name__ == "__main__":
