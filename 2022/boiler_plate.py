@@ -19,17 +19,17 @@ def load_inputs(input_file):
     return report
 
 
-def count_calories(input_file):
+def part1(input_file):
     inputs = load_inputs(input_file)
 
 
-def count_calories_2(input_file):
+def part2(input_file):
     inputs = load_inputs(input_file)
 
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Count depth increases.")
+    parser = argparse.ArgumentParser(description="Advent of Code.")
     parser.add_argument('file', type=argparse.FileType('r'))
     parser.add_argument('--part', type=int, required=True, help='Part 1 or Part 2')
 
@@ -38,9 +38,9 @@ def main():
     if len(sys.argv) > 1:
         with args.file as input_file:
             if args.part == 1:
-                count_calories(input_file)
+                part1(input_file)
             elif args.part == 2:
-                count_calories_2(input_file)
+                part2(input_file)
 
 
 
