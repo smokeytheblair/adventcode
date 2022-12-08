@@ -27,7 +27,6 @@ def part2(input_file):
     inputs = load_inputs(input_file)
 
 
-
 def main():
     parser = argparse.ArgumentParser(description="Advent of Code.")
     parser.add_argument('file', type=argparse.FileType('r'))
@@ -41,7 +40,6 @@ def main():
                 part1(input_file)
             elif args.part == 2:
                 part2(input_file)
-
 
 
 if __name__ == "__main__":
