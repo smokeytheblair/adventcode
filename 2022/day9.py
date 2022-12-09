@@ -91,18 +91,20 @@ def part2(input_file):
 
     rope = []
     for i in range(num_knots):
-        rope.append([0, 0])
+        rope.append([1000, 1000])
 
     coords_visited.add(str(rope[9]))
 
     for instr in inputs:
         direction, str_count = instr.strip().split(' ')
         count = int(str_count)
+        print(f"{direction}, {count}")
 
         if direction == 'U':
             for i in range(count):
                 for knot in range(num_knots):
                     if knot == 9:
+                        coords_visited.add(str(rope[knot]))
                         break
 
                     head_point = rope[knot]
@@ -111,18 +113,29 @@ def part2(input_file):
                     if 0 == knot:
                         head_point[1] += 1
 
-                    if abs(head_point[1] - tail_point[1]) > 1 and head_point[0] != tail_point[0]:
-                        tail_point[0] = head_point[0]
+                    if abs(head_point[1] - tail_point[1]) > 1 and head_point[0] != tail_point[0] or \
+                            abs(head_point[0] - tail_point[0]) > 1 and head_point[1] != tail_point[1]:
+                        if head_point[0] < tail_point[0]:
+                            tail_point[0] -= 1
+                        else:
+                            tail_point[0] += 1
 
-                    if abs(head_point[1] - tail_point[1]) > 1:
+                        if head_point[1] < tail_point[1]:
+                            tail_point[1] -= 1
+                        else:
+                            tail_point[1] += 1
+                    elif abs(head_point[1] - tail_point[1]) > 1:
                         tail_point[1] += 1
-
-                    if num_knots - 1 == i:
-                        coords_visited.add(str(tail_point))
+                    elif abs(head_point[0] - tail_point[0]) > 1:
+                        if head_point[0] > tail_point[0]:
+                            tail_point[0] += 1
+                        else:
+                            tail_point[0] -= 1
         elif direction == 'D':
             for i in range(count):
                 for knot in range(num_knots):
                     if knot == 9:
+                        coords_visited.add(str(rope[knot]))
                         break
 
                     head_point = rope[knot]
@@ -131,18 +144,29 @@ def part2(input_file):
                     if 0 == knot:
                         head_point[1] -= 1
 
-                    if abs(head_point[1] - tail_point[1]) > 1 and head_point[0] != tail_point[0]:
-                        tail_point[0] = head_point[0]
+                    if abs(head_point[1] - tail_point[1]) > 1 and head_point[0] != tail_point[0] or \
+                            abs(head_point[0] - tail_point[0]) > 1 and head_point[1] != tail_point[1]:
+                        if head_point[0] < tail_point[0]:
+                            tail_point[0] -= 1
+                        else:
+                            tail_point[0] += 1
 
-                    if abs(head_point[1] - tail_point[1]) > 1:
+                        if head_point[1] < tail_point[1]:
+                            tail_point[1] -= 1
+                        else:
+                            tail_point[1] += 1
+                    elif abs(head_point[1] - tail_point[1]) > 1:
                         tail_point[1] -= 1
-
-                    if num_knots - 1 == i:
-                        coords_visited.add(str(tail_point))
+                    elif abs(head_point[0] - tail_point[0]) > 1:
+                        if head_point[0] > tail_point[0]:
+                            tail_point[0] += 1
+                        else:
+                            tail_point[0] -= 1
         elif direction == 'R':
             for i in range(count):
                 for knot in range(num_knots):
                     if knot == 9:
+                        coords_visited.add(str(rope[knot]))
                         break
 
                     head_point = rope[knot]
@@ -151,18 +175,29 @@ def part2(input_file):
                     if 0 == knot:
                         head_point[0] += 1
 
-                    if head_point[1] != tail_point[1] and abs(head_point[0] - tail_point[0]) > 1:
-                        tail_point[1] = head_point[1]
+                    if head_point[1] != tail_point[1] and abs(head_point[0] - tail_point[0]) > 1 or \
+                            head_point[0] != tail_point[0] and abs(head_point[1] - tail_point[1]) > 1:
+                        if head_point[1] < tail_point[1]:
+                            tail_point[1] -= 1
+                        else:
+                            tail_point[1] += 1
 
-                    if abs(head_point[0] - tail_point[0]) > 1:
+                        if head_point[0] < tail_point[0]:
+                            tail_point[0] -= 1
+                        else:
+                            tail_point[0] += 1
+                    elif abs(head_point[0] - tail_point[0]) > 1:
                         tail_point[0] += 1
-
-                    if num_knots - 1 == i:
-                        coords_visited.add(str(tail_point))
+                    elif abs(head_point[1] - tail_point[1]) > 1:
+                        if head_point[1] > tail_point[1]:
+                            tail_point[1] += 1
+                        else:
+                            tail_point[1] -= 1
         elif direction == 'L':
             for i in range(count):
                 for knot in range(num_knots):
                     if knot == 9:
+                        coords_visited.add(str(rope[knot]))
                         break
 
                     head_point = rope[knot]
@@ -171,16 +206,24 @@ def part2(input_file):
                     if 0 == knot:
                         head_point[0] -= 1
 
-                    if head_point[1] != tail_point[1] and abs(head_point[0] - tail_point[0]) > 1:
-                        tail_point[1] = head_point[1]
+                    if head_point[1] != tail_point[1] and abs(head_point[0] - tail_point[0]) > 1 or \
+                            head_point[0] != tail_point[0] and abs(head_point[1] - tail_point[1]) > 1:
+                        if head_point[1] < tail_point[1]:
+                            tail_point[1] -= 1
+                        else:
+                            tail_point[1] += 1
 
-                    if abs(head_point[0] - tail_point[0]) > 1:
+                        if head_point[0] < tail_point[0]:
+                            tail_point[0] -= 1
+                        else:
+                            tail_point[0] += 1
+                    elif abs(head_point[0] - tail_point[0]) > 1:
                         tail_point[0] -= 1
-
-                    if num_knots - 1 == i:
-                        coords_visited.add(str(tail_point))
-
-        print(f"{direction}, {count}")
+                    elif abs(head_point[1] - tail_point[1]) > 1:
+                        if head_point[1] > tail_point[1]:
+                            tail_point[1] += 1
+                        else:
+                            tail_point[1] -= 1
 
     print(f"Nodes visited: {len(coords_visited)}")
 
