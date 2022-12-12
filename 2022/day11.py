@@ -26,16 +26,14 @@ class Monkey:
     def inspect(self, monkeys):
         self.inspect_count += len(self.items)
         for old in self.items:
-            new = math.floor(self.inspect_func(old)/3)
-            self.test(monkeys, new)
+            self.test(monkeys, math.floor(self.inspect_func(old)/3))
 
         self.items = []
 
     def inspect2(self, monkeys):
         self.inspect_count += len(self.items)
         for old in self.items:
-            new = self.inspect_func(old)
-            self.test(monkeys, new)
+            self.test(monkeys, self.inspect_func(old))
 
         self.items = []
 
@@ -87,7 +85,7 @@ def create_monkeys(inputs):
             else:
                 operand = temp
 
-            func = eval("lambda old: " + line.strip()[17:])
+            func = eval("lambda old:" + line.strip()[17:])
         elif line.find('Test:') > -1:
             divisible_by = int(line.strip()[19:])
         elif line.find('If true:') > -1:
