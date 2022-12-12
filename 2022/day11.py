@@ -24,19 +24,17 @@ class Monkey:
         return f"Monkey {self.num} inspected items {self.inspect_count} times."
 
     def inspect(self, monkeys):
-        for i in range(len(self.items)):
-            old = self.items[i]
+        self.inspect_count += len(self.items)
+        for old in self.items:
             new = math.floor(self.inspect_func(old)/3)
-
             self.test(monkeys, new)
 
         self.items = []
 
     def inspect2(self, monkeys):
-        for i in range(len(self.items)):
-            old = self.items[i]
+        self.inspect_count += len(self.items)
+        for old in self.items:
             new = self.inspect_func(old)
-
             self.test(monkeys, new)
 
         self.items = []
@@ -114,7 +112,6 @@ def part1(input_file):
 
     for i in range(20):
         for monkey in monkeys:
-            monkey.inspect_count += len(monkey.items)
             monkey.inspect(monkeys)
 
     for monkey in monkeys:
@@ -134,7 +131,6 @@ def part2(input_file):
 
     for i in range(10000):
         for monkey in monkeys:
-            monkey.inspect_count += len(monkey.items)
             monkey.inspect2(monkeys)
 
     for monkey in monkeys:
