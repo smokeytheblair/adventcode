@@ -6,7 +6,7 @@ reset_report = None
 
 
 class Monkey:
-    def __init__(self, num:int, items:[], operator:str, operand:int, divisible_by:int, monkey1:int, monkey2:int):
+    def __init__(self, num:int, items:[], operator:str, operand:int, inspect_func, divisible_by:int, monkey1:int, monkey2:int):
         self.num:int = num
         self.items:[] = items
 
@@ -18,6 +18,8 @@ class Monkey:
 
         self.inspect_count = 0
 
+        self.inspect_func = inspect_func
+
     def __str__(self):
         return f"Monkey {self.num} inspected items {self.inspect_count} times."
 
@@ -25,22 +27,10 @@ class Monkey:
         count = len(self.items)
         for i in range(count):
             old = self.items[0]
-            new = 0
-
-            temp_operand = 0
-            if self.operand == 'old':
-                temp_operand = old
-            else:
-                temp_operand = self.operand
-
-            if self.operator == '+':
-                new = old + temp_operand
-            elif self.operator == '*':
-                new = old * temp_operand
+            new = self.inspect_func(old)
 
             new = math.floor(new/3)
             self.items[0] = new
-            self.inspect_count += 1
 
             self.test(monkeys, new)
 
@@ -48,21 +38,9 @@ class Monkey:
         count = len(self.items)
         for i in range(count):
             old = self.items[0]
-            new = 0
-
-            temp_operand = 0
-            if self.operand == 'old':
-                temp_operand = old
-            else:
-                temp_operand = self.operand
-
-            if self.operator == '+':
-                new = old + temp_operand
-            elif self.operator == '*':
-                new = old * temp_operand
+            new = self.inspect_func(old)
 
             self.items[0] = new
-            self.inspect_count += 1
 
             self.test(monkeys, new)
 
@@ -102,6 +80,7 @@ def create_monkeys(inputs):
     operator = ''
     operand = 0
     divisible_by = 0
+    func = None
 
     for line in inputs:
         if line.find('Monkey') > -1:
@@ -115,6 +94,8 @@ def create_monkeys(inputs):
                 operand = int(temp)
             else:
                 operand = temp
+
+            func = eval("lambda old: " + line.strip()[17:])
         elif line.find('Test:') > -1:
             divisible_by = int(line.strip()[19:])
         elif line.find('If true:') > -1:
@@ -123,10 +104,10 @@ def create_monkeys(inputs):
             temp = line.strip()[26:]
             monkey2 = int(temp)
         elif line == '\n':
-            monkeys.append(Monkey(monkey_num, monkey_items, operator, operand, divisible_by, monkey1, monkey2))
+            monkeys.append(Monkey(monkey_num, monkey_items, operator, operand, func, divisible_by, monkey1, monkey2))
 
     # last monkey in the list
-    monkeys.append(Monkey(monkey_num, monkey_items, operator, operand, divisible_by, monkey1, monkey2))
+    monkeys.append(Monkey(monkey_num, monkey_items, operator, operand, func, divisible_by, monkey1, monkey2))
 
     print(monkeys)
     return monkeys
@@ -139,6 +120,7 @@ def part1(input_file):
 
     for i in range(20):
         for monkey in monkeys:
+            monkey.inspect_count += len(monkey.items)
             monkey.inspect(monkeys)
 
     for monkey in monkeys:
@@ -158,6 +140,7 @@ def part2(input_file):
 
     for i in range(10000):
         for monkey in monkeys:
+            monkey.inspect_count += len(monkey.items)
             monkey.inspect2(monkeys)
 
     for monkey in monkeys:
