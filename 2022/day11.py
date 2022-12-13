@@ -6,19 +6,19 @@ reset_report = None
 
 
 class Monkey:
-    def __init__(self, num:int, items:[], operator:str, operand:int, inspect_func, divisible_by:int, monkey1:int, monkey2:int):
+    mod = 0
+    def __init__(self, num:int, items:[], inspect_func, divisible_by:int, monkey1:int, monkey2:int):
         self.num:int = num
         self.items:[] = items
 
-        self.operator = operator
-        self.operand = operand
+        self.inspect_func = inspect_func
+
         self.divisible_by:int = divisible_by
         self.monkey1:int = monkey1
         self.monkey2:int = monkey2
 
         self.inspect_count = 0
 
-        self.inspect_func = inspect_func
 
     def __str__(self):
         return f"Monkey {self.num} inspected items {self.inspect_count} times."
@@ -38,6 +38,8 @@ class Monkey:
         self.items = []
 
     def test(self, monkeys, item_val):
+        # keep the item value smaller, so the actual math doesn't overwhelm the CPU
+        item_val %= Monkey.mod
         if item_val % self.divisible_by == 0:
             monkeys[self.monkey1].items.append(item_val)
         else:
@@ -67,8 +69,6 @@ def create_monkeys(inputs):
     monkey_items = []
     monkey1 = 0
     monkey2 = 0
-    operator = ''
-    operand = 0
     divisible_by = 0
     func = None
 
@@ -78,13 +78,6 @@ def create_monkeys(inputs):
         elif line.find('Starting') > -1:
             monkey_items = [int(item) for item in line.strip()[16:].split(', ')]
         elif line.find('Operation') > -1:
-            operator = line[23]
-            temp = line.strip()[23:]
-            if temp.isnumeric():
-                operand = int(temp)
-            else:
-                operand = temp
-
             func = eval("lambda old:" + line.strip()[17:])
         elif line.find('Test:') > -1:
             divisible_by = int(line.strip()[19:])
@@ -94,10 +87,10 @@ def create_monkeys(inputs):
             temp = line.strip()[26:]
             monkey2 = int(temp)
         elif line == '\n':
-            monkeys.append(Monkey(monkey_num, monkey_items, operator, operand, func, divisible_by, monkey1, monkey2))
+            monkeys.append(Monkey(monkey_num, monkey_items, func, divisible_by, monkey1, monkey2))
 
     # last monkey in the list
-    monkeys.append(Monkey(monkey_num, monkey_items, operator, operand, func, divisible_by, monkey1, monkey2))
+    monkeys.append(Monkey(monkey_num, monkey_items, func, divisible_by, monkey1, monkey2))
 
     print(monkeys)
     return monkeys
@@ -127,7 +120,14 @@ def part2(input_file):
 
     monkeys = create_monkeys(inputs)
 
-    for i in range(10000):
+    # keep the item value smaller, so the actual math doesn't overwhelm the CPU
+    mod = 1
+    for monkey in monkeys:
+        mod *= monkey.divisible_by
+
+    Monkey.mod = mod
+
+    for _ in range(10000):
         for monkey in monkeys:
             monkey.inspect2(monkeys)
 
