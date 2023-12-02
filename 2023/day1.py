@@ -42,15 +42,36 @@ def part1(input_file):
 
 def find_digits(line:str):
     digits = []
-    digit_words = {'zero': '0', 'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9'}
+    digit_words = {'zero': '0',
+                   'one': '1',
+                   'two': '2',
+                   'three': '3',
+                   'four': '4',
+                   'five': '5',
+                   'six': '6',
+                   'seven': '7',
+                   'eight': '8',
+                   'nine': '9',
+                   'twone': 'two one',
+                   'oneight': 'one eight',
+                   'threeight': 'three eight',
+                   'nineight': 'nine eight',
+                   'eighthree': 'eight three',
+                   'eightwo': 'eight two'}
 
-    numbers = re.findall(r'\d|zero|one|two|three|four|five|six|seven|eight|nine', line)
+    numbers = re.findall(r'\d|twone|oneight|threeight|nineight|eighthree|eightwo|zero|one|two|three|four|five|six|seven|eight|nine', line)
 
     print(numbers)
 
     for num in numbers:
         if num in digit_words.keys():
-            digits.append(digit_words[num])
+            if len(digit_words[num]) > 1:
+                num_words = digit_words[num].split(' ')
+                print(num_words)
+                digits.append(digit_words[num_words[0]])
+                digits.append(digit_words[num_words[1]])
+            else:
+                digits.append(digit_words[num])
         else:
             digits.append(num)
 
