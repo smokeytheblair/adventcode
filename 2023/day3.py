@@ -19,8 +19,17 @@ def load_inputs(input_file):
     return report
 
 
+def isValidPos(x, y, n, m):
+    if x < 0 or y < 0 or x > n - 1 or y > m - 1:
+        return 0
+    return 1
+
+
 def part1(input_file):
     inputs = load_inputs(input_file)
+
+    m = len(inputs)
+    n = len(inputs[0])
 
 
 def part2(input_file):
