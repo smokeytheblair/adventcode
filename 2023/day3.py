@@ -77,13 +77,11 @@ def get_part_num(inputs, x, y, m, n):
         else:
             break
 
-    return int(row[x_start:x_end+1])
+    return int(row[x_start:x_end+1]), [[x,y] for x in range(x_start, x_end+1)]
 
 
 def part1(input_file):
     inputs = load_inputs(input_file)
-
-    print(inputs)
 
     n = len(inputs)
     m = len(inputs[0].strip())
@@ -97,15 +95,89 @@ def part1(input_file):
                 same_number = False
             if not same_number and is_part_num(inputs, int(x), int(y), m, n):
                 print(f'inputs[{x}, {y}]: part number {get_part_num(inputs, int(x), int(y), m, n)}')
-                part_nums.append(get_part_num(inputs, int(x), int(y), m, n))
+                part_nums.append(get_part_num(inputs, int(x), int(y), m, n)[0])
                 same_number = True
 
     print(part_nums)
     print(sum(part_nums))
 
 
+def find_operand(inputs, x, y, m, n, ops, visited_coords):
+    if str(inputs[y][x]).isdigit():
+        part_num = []
+        if [x, y] not in visited_coords:
+            part_num = get_part_num(inputs, x, y, m, n)
+            ops.append(part_num[0])
+        if len(part_num) == 2:
+            for coord in part_num[1]:
+                visited_coords.append(coord)
+
+def find_operands(inputs, x, y, m, n):
+    ops = []
+    visited_coords = []
+
+    # print(f'find_operands[{x}][{y}]')
+
+    if y < n - 1:
+        x_temp = x
+        y_temp = y + 1
+        find_operand(inputs, x_temp, y_temp, m, n, ops, visited_coords)
+    if y > 0:
+        x_temp = x
+        y_temp = y - 1
+        find_operand(inputs, x_temp, y_temp, m, n, ops, visited_coords)
+    if y < n - 1 and x < m - 1:
+        x_temp = x + 1
+        y_temp = y + 1
+        find_operand(inputs, x_temp, y_temp, m, n, ops, visited_coords)
+    if y < n - 1 and x > 0:
+        x_temp = x - 1
+        y_temp = y + 1
+        find_operand(inputs, x_temp, y_temp, m, n, ops, visited_coords)
+    if y > 0 and x > 0:
+        x_temp = x - 1
+        y_temp = y - 1
+        find_operand(inputs, x_temp, y_temp, m, n, ops, visited_coords)
+    if y > 0 and x < m - 1:
+        x_temp = x + 1
+        y_temp = y - 1
+        find_operand(inputs, x_temp, y_temp, m, n, ops, visited_coords)
+    if x > 0:
+        x_temp = x - 1
+        y_temp = y
+        find_operand(inputs, x_temp, y_temp, m, n, ops, visited_coords)
+    if x < m - 1:
+        x_temp = x + 1
+        y_temp = y
+        find_operand(inputs, x_temp, y_temp, m, n, ops, visited_coords)
+
+    if len(ops) != 2:
+        # print(f'find_operands[{x}][{y}] returning False, 0, 0')
+        return False, 0, 0
+    else:
+        print(f'find_operands[{x}][{y}] returning True {ops[0]}, {ops[1]}')
+        return True, ops[0], ops[1]
+
+
 def part2(input_file):
     inputs = load_inputs(input_file)
+
+    gear = '*'
+    n = len(inputs)
+    m = len(inputs[0].strip())
+
+    gear_ratios = []
+    for y in range(len(inputs)):
+        for x in range(len(inputs[y].strip())):
+            character = inputs[y][x]
+            if character == gear:
+                operands = find_operands(inputs, x, y, m, n)
+                if operands[0]:
+                    gear_ratios.append(operands[1] * operands[2])
+
+    print(gear_ratios)
+    print(sum(gear_ratios))
+
 
 
 def main():
