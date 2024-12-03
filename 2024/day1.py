@@ -19,8 +19,24 @@ def load_inputs(input_file):
     return report
 
 
+def find_lowest_index(list1, count):
+    sorted_list = sorted(list1)
+    smallest = sorted_list[count]
+
+    return smallest
+
+
 def find_total_distance(list1, list2):
-    pass
+    total_distance = 0
+    for i in range(len(list1)):
+        pos1 = find_lowest_index(list1, i)
+        pos2 = find_lowest_index(list2, i)
+
+        print(f"distance[{i}] = {abs(pos1-pos2)} = {pos1}-{pos2}")
+
+        total_distance += abs(pos1 - pos2)
+
+    print(f"Total distance = {total_distance}")
 
 
 def part1(input_file):
