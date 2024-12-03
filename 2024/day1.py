@@ -41,7 +41,6 @@ def find_total_distance(list1, list2):
 
 def part1(input_file):
     inputs = load_inputs(input_file)
-
     print(inputs)
 
     list1 = []
@@ -57,9 +56,38 @@ def part1(input_file):
 
     find_total_distance(list1, list2)
 
+
+def find_similarity_score(list1, list2):
+    sorted1 = sorted(list1)
+
+    similarity_score = 0
+
+    for val in list1:
+        count = list2.count(val)
+
+        similarity_score += val * count
+
+    return similarity_score
+
+
 def part2(input_file):
     inputs = load_inputs(input_file)
+    print(inputs)
 
+    list1 = []
+    list2 = []
+    index = 0
+    for row in inputs:
+        vals = [int(x) for x in row.strip().split("   ")]
+
+        list1.append(vals[0])
+        list2.append(vals[1])
+
+    print(f"list1 = {list1}, list2 = {list2}")
+
+    similarity_score = find_similarity_score(list1, list2)
+
+    print(f"Similarity Score: {similarity_score}")
 
 def main():
     parser = argparse.ArgumentParser(description="Advent of Code.")
