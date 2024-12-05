@@ -29,10 +29,50 @@ def rotate_90(wordsearch):
         for j in range(len(wordsearch)):
             new_line += wordsearch[j][i]
 
+        new_line = new_line[::-1]
         print(new_line)
         new_wordsearch.append(new_line)
 
     return new_wordsearch
+
+
+def search_diagonals(wordsearch):
+    word_count = 0
+
+    for j in range(1, len(wordsearch)):
+        di = 0
+        dj = j
+        line = ''
+        while di < len(wordsearch[0]) and dj < len(wordsearch):
+            line += wordsearch[dj][di]
+            di += 1
+            dj += 1
+
+        words = re.findall(r"XMAS", line)
+        word_count += len(words)
+        print(f"diagonal line XMAS: {line}\nwords: {words}")
+        words = re.findall(r"SAMX", line)
+        word_count += len(words)
+        print(f"diagonal line SAMX: {line}\nwords: {words}")
+
+    for i in range(len(wordsearch[0])):
+        di = i
+        dj = 0
+        line = ''
+        while di<len(wordsearch[0]) and dj<len(wordsearch):
+            line += wordsearch[dj][di]
+            di += 1
+            dj += 1
+
+        words = re.findall(r"XMAS", line)
+        word_count += len(words)
+        print(f"diagonal line XMAS: {line}\nwords: {words}")
+        words = re.findall(r"SAMX", line)
+        word_count += len(words)
+        print(f"diagonal line SAMX: {line}\nwords: {words}")
+
+    print(f"word_count: {word_count}")
+    return word_count
 
 
 def part1(input_file):
@@ -48,8 +88,14 @@ def part1(input_file):
 
     for i in range(2):
         for line in wordsearch:
-            words = re.findall(r"XMAS|SAMX", line)
+            words = re.findall(r"XMAS", line)
             word_count += len(words)
+            print(f"added XMAS: {len(words)} from row[{line}]")
+            words = re.findall(r"SAMX", line)
+            word_count += len(words)
+            print(f"added SAMX: {len(words)} from row[{line}]")
+
+        word_count += search_diagonals(wordsearch)
 
         wordsearch = rotate_90(wordsearch)
 
