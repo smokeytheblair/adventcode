@@ -1,5 +1,6 @@
 import sys
 import argparse
+import re
 
 reset_report = None
 
@@ -19,13 +20,41 @@ def load_inputs(input_file):
     return report
 
 
+def rotate_90(wordsearch):
+    print("Rotate table 90 degrees")
+
+    new_wordsearch = []
+    for i in range(len(wordsearch[0])):
+        new_line = ''
+        for j in range(len(wordsearch)):
+            new_line += wordsearch[j][i]
+
+        print(new_line)
+        new_wordsearch.append(new_line)
+
+    return new_wordsearch
+
+
 def part1(input_file):
     inputs = load_inputs(input_file)
     wordsearch = []
     for line in inputs:
+        print(line.strip())
         wordsearch.append(line.strip())
 
     print(wordsearch)
+
+    word_count = 0
+
+    for i in range(2):
+        for line in wordsearch:
+            words = re.findall(r"XMAS|SAMX", line)
+            word_count += len(words)
+
+        wordsearch = rotate_90(wordsearch)
+
+    print (f"word_count: {word_count}")
+
 
 def part2(input_file):
     inputs = load_inputs(input_file)
