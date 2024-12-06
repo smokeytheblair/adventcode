@@ -22,6 +22,42 @@ def load_inputs(input_file):
 def part1(input_file):
     inputs = load_inputs(input_file)
 
+    precedence = {}
+    middle_pages = []
+    reading_rules = True
+    for line in inputs:
+        if 1 < len(line) and reading_rules:
+            key, value = [int(x) for x in line.strip().split("|")]
+            if None == precedence.get(key):
+                precedence[key] = [value]
+            else:
+                precedence[key].append(value)
+        else:
+            reading_rules = False
+            if "\n" == line:
+                continue
+
+            pages = [int(x) for x in line.strip().split(",")]
+            good_line = True
+            for page in pages:
+                if None != precedence.get(page) and good_line:
+                    current_page = pages.index(page)
+                    for i in range(len(pages)):
+                        if pages[i] in precedence[page] and i <= current_page:
+                            good_line = False
+                            break
+
+            if good_line:
+                middle_pages.append(pages[int((len(pages)-1)/2)])
+
+    print(f"Sum: {sum(middle_pages)}, pages: {middle_pages}")
+
+
+
+
+
+    print(f"precedence: {precedence}")
+
 
 def part2(input_file):
     inputs = load_inputs(input_file)
