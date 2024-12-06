@@ -58,6 +58,27 @@ def part1(input_file):
 
 def part2(input_file):
     inputs = load_inputs(input_file)
+    wordsearch = []
+    for line in inputs:
+        print(line.strip())
+        wordsearch.append(line.strip())
+
+    print(wordsearch)
+
+    x_mas_count = 0
+    for y in range(1, len(wordsearch)-1):
+        for x in range(1,len(wordsearch[0])-1):
+            if 'A' == wordsearch[y][x]:
+                if 'M' == wordsearch[y+1][x+1] and 'S' == wordsearch[y-1][x-1] and 'M' == wordsearch[y+1][x-1] and 'S' == wordsearch[y-1][x+1]:
+                    x_mas_count += 1
+                if 'M' == wordsearch[y-1][x-1] and 'S' == wordsearch[y+1][x+1] and 'M' == wordsearch[y-1][x+1] and 'S' == wordsearch[y+1][x-1]:
+                    x_mas_count += 1
+                if 'M' == wordsearch[y-1][x-1] and 'S' == wordsearch[y+1][x+1] and 'M' == wordsearch[y+1][x-1] and 'S' == wordsearch[y-1][x+1]:
+                    x_mas_count += 1
+                if 'M' == wordsearch[y-1][x+1] and 'S' == wordsearch[y+1][x-1] and 'M' == wordsearch[y+1][x+1] and 'S' == wordsearch[y-1][x-1]:
+                    x_mas_count += 1
+
+    print(f"x-mas count: {x_mas_count}")
 
 
 def main():
