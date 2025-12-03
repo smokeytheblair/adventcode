@@ -47,6 +47,44 @@ def part1(input_file):
 
 def part2(input_file):
     inputs = load_inputs(input_file)
+    dial_position = 50
+    count_zeros = 0
+    dial_size = 100
+
+    for instruction in inputs:
+        direction = instruction[0]
+        distance = int(instruction[1:])
+
+        if direction == 'R':
+            if distance > dial_size:
+                count_zeros += distance // dial_size
+                if dial_position != 0 and dial_position + distance%dial_size > dial_size:
+                    count_zeros += 1
+            elif dial_position != 0 and dial_position + distance > dial_size:
+                count_zeros += 1
+
+            dial_position += distance
+            dial_position %= dial_size
+
+            if dial_position == 0:
+                count_zeros += 1
+        elif direction == 'L':
+            if distance > dial_size:
+                count_zeros += distance // dial_size
+                if dial_position != 0 and dial_position - distance%dial_size < 0:
+                    count_zeros += 1
+            elif dial_position != 0 and dial_position - distance < 0:
+                count_zeros += 1
+
+            dial_position -= distance
+            dial_position %= dial_size
+
+            if dial_position == 0:
+                count_zeros += 1
+
+        print(f"count_zeros = {count_zeros}")
+
+        print(f"direction: {direction}, distance: {distance} dial points to: {dial_position}")
 
 
 def main():
