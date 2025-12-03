@@ -61,6 +61,52 @@ def part1(input_file):
 def part2(input_file):
     inputs = load_inputs(input_file)
 
+    ranges = create_ranges(inputs)
+
+    invalid_ids = []
+
+    for range_pair in ranges:
+        print(range_pair)
+        for x in range(int(range_pair[0]), int(range_pair[1])+1):
+            num_str = str(x)
+            for y in range(len(num_str), 0, -1):
+                sub_str = num_str[:y]
+                # print(f"y: {y}, num_str: {num_str}, sub_str: {sub_str}")
+                # if len(num_str)%2 == 1:
+                #     continue
+
+                if len(num_str) % y != 0:
+                    continue
+
+                elif y == 1 and len(num_str) > 1:
+                    digit = sub_str[0]
+                    all_same = True
+                    for num in num_str:
+                        if num != digit:
+                            all_same = False
+                            break
+
+                    if all_same:
+                        print(f"adding {x} to invalid_ids list")
+                        invalid_ids.append(x)
+                        break
+
+                elif y > 1:
+                    sub_str_offset = y
+                    # print(f"sub_str_offset: {sub_str_offset}")
+                    match = False
+                    while num_str.find(sub_str, sub_str_offset) == sub_str_offset:
+                        match = True
+                        sub_str_offset += y
+                        # print(f"sub_str_offset: {sub_str_offset}")
+
+                    if match and len(num_str) == sub_str_offset:
+                        print(f"adding {x} to invalid_ids list")
+                        invalid_ids.append(x)
+                        break
+
+    print(f"invalid_ids: {invalid_ids}")
+    print(f"sum: {sum(invalid_ids)}")
 
 def main():
     parser = argparse.ArgumentParser(description="Advent of Code.")
