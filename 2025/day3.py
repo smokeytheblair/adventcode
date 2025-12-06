@@ -50,18 +50,28 @@ def part2(input_file):
     for line in inputs:
         print(line)
         # number = [int(''.join(x)) for x in itertools.combinations(line, 12)]
-        highest_num = 0
         battery_size = 12
+        highest_num = ['0','0','0','0','0','0','0','0','0','0','0','0']
+        last_digit_pos = 0
 
         for i in range(battery_size):
+
+            # print(f"*** i: {i}, last_digit_pos: {last_digit_pos}, last possible position: {len(line)-(battery_size-i)}")
+
+            for j in range(last_digit_pos, len(line)-(battery_size-i-1)):
+                # print(f"j:{j}, line:{line[i:j]}")
+                if int(line[j]) > int(highest_num[i]):
+                    highest_num[i] = line[j]
+                    last_digit_pos = j+1
+                    # print(f"=== highest_num: {highest_num}")
+
 
 
         # for number in (int(''.join(x)) for x in itertools.combinations(line, 12)):
         #     # print(f"highest_num: {highest_num}, number: {number}")
         #     highest_num = max(highest_num, number)
 
-        print(f"highest_num: {highest_num}")
-        highest_joltage.append(highest_num)
+        highest_joltage.append(int(''.join(highest_num)))
 
     print(f"highest_joltage: {highest_joltage}")
     print(f"sum: {sum(highest_joltage)}")
