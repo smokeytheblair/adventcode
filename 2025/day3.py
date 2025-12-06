@@ -45,6 +45,28 @@ def part2(input_file):
     inputs = load_inputs(input_file)
 
 
+    highest_joltage = []
+
+    for line in inputs:
+        print(line)
+        # number = [int(''.join(x)) for x in itertools.combinations(line, 12)]
+        highest_num = 0
+        battery_size = 12
+
+        for i in range(battery_size):
+
+
+        # for number in (int(''.join(x)) for x in itertools.combinations(line, 12)):
+        #     # print(f"highest_num: {highest_num}, number: {number}")
+        #     highest_num = max(highest_num, number)
+
+        print(f"highest_num: {highest_num}")
+        highest_joltage.append(highest_num)
+
+    print(f"highest_joltage: {highest_joltage}")
+    print(f"sum: {sum(highest_joltage)}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Advent of Code.")
     parser.add_argument('file', type=argparse.FileType('r'))
